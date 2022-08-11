@@ -15,10 +15,12 @@ class Article extends Model
         'created_at',
         'updated_at',
     ];
+
     public function tags()
     {
         return $this->morphToMany(Tag::class, 'tag_connect');
     }
+
     public function categories()
     {
         return $this->morphToMany(Category::class, 'cate_connect');

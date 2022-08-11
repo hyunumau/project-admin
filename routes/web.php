@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\ArticleController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -43,3 +43,4 @@ Route::group([
     Route::resource('category', 'CategoryController');
     Route::resource('article', 'ArticleController');
 });
+Route::get('/article', [ArticleController::class, 'getAll']);

@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
 {
@@ -15,11 +16,10 @@ class ArticleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index()
     {
         $articles = new Article;
-        $articles = $articles->latest()->paginate(5);
+        $articles = $articles->latest()->paginate(5);;
         return view('admin.article.index', compact('articles'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
@@ -33,6 +33,7 @@ class ArticleController extends Controller
     {
         $categories = Category::all();
         $tags = Tag::all();
+
         return view('admin.article.create', compact('categories', "tags"));
     }
 
@@ -56,20 +57,31 @@ class ArticleController extends Controller
         $addCategory = [];
         $addTag = [];
 
-        foreach ($request->categories as $category) {
-            $cate_id = Category::where('name', $category)->first()->id;
-            array_push($addCategory, $cate_id);
-        }
-        foreach ($request->tags as $tag) {
-            $tag_id = Tag::where('name', $tag)->first()->id;
-            array_push($addTag, $tag_id);
-        }
+        DB::beginTransaction();
 
-        $addArticle->categories()->syncWithoutDetaching($addCategory);
-        $addArticle->tags()->syncWithoutDetaching($addTag);
+        try {
+            foreach ($request->categories as $category) {
+                $cate_id = Category::where('name', $category)->first()->id;
+                array_push($addCategory, $cate_id);
+            }
 
-        return redirect()->route('article.index')
-            ->with('message', 'Tạo thành công');
+            foreach ($request->tags as $tag) {
+                $tag_id = Tag::where('name', $tag)->first()->id;
+                array_push($addTag, $tag_id);
+            }
+
+            $addArticle->categories()->sync($addCategory);
+            $addArticle->tags()->sync($addTag);
+
+            DB::commit();
+
+            return redirect()->route('article.index')
+                ->with('message', 'Tạo thành công');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()->with('error', 'Thêm thất bại');
+        }
     }
 
     /**
@@ -93,6 +105,7 @@ class ArticleController extends Controller
         $tags = Tag::all();
         $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
         $articleHasTags = array_column(json_decode($article->tags, true), 'id');
+
         return view('admin.article.edit', compact('article', 'categories', 'articleHasCategories', 'tags', 'articleHasTags'));
     }
 
@@ -105,12 +118,22 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
+        try {
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         $dataInsert = $request->validate([
             'caption' => 'required',
             'author' => 'required',
             'detail' => 'required',
             'image' => 'required',
         ]);
+
+        $article->caption = $request->caption;
+        $article->author = $request->author;
+        $article->detail = $request->detail;
+        $article->image = $request->image;
         $addCategories = [];
         $addTags = [];
 
@@ -118,6 +141,7 @@ class ArticleController extends Controller
             $cate_id = Category::where('name', $category)->first()->id;
             array_push($addCategories, $cate_id);
         }
+
         foreach ($request->tags as $tag) {
             $tag_id = Tag::where('name', $tag)->first()->id;
             array_push($addTags, $tag_id);
@@ -125,6 +149,8 @@ class ArticleController extends Controller
 
         $article->categories()->sync($addCategories);
         $article->tags()->sync($addTags);
+        $article->save();
+
         return redirect()->route('article.index')
             ->with('message', 'Cập nhật thành công');
     }
@@ -137,7 +163,13 @@ class ArticleController extends Controller
     public function destroy(Article $article)
     {
         $article->delete();
+
         return redirect()->route('article.index')
             ->with('message', 'Xoá thành công');
+    }
+
+    public function getAll()
+    {
+        return Article::all();
     }
 }

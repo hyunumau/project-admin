@@ -29,7 +29,7 @@
                     <x-nav-link :href="route('category.index')" :active="request()->routeIs('category.index')">
                         {{ __('Categories') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('tag.index')" :active="request()->routeIs('category.index')">
+                    <x-nav-link :href="route('tag.index')" :active="request()->routeIs('tag.index')">
                         {{ __('Tags') }}
                     </x-nav-link>
                 </div>
@@ -106,7 +106,7 @@
             <x-responsive-nav-link :href="route('category.index')" :active="request()->routeIs('category.index')">
                 {{ __('Categories') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('tag.index')" :active="request()->routeIs('category.index')">
+            <x-responsive-nav-link :href="route('tag.index')" :active="request()->routeIs('tag.index')">
                 {{ __('Tags') }}
             </x-responsive-nav-link>
         </div>
