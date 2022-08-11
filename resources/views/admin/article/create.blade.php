@@ -4,6 +4,12 @@
             {{ __('Articles') }}
         </h2>
     </x-slot>
+    @if (session('error'))
+        <div class="mb-8 text-green-400 font-bold">
+            {{ session()->get('message') }}
+        </div>
+    @endif
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -70,8 +76,8 @@
                                 @endforelse
                             </div>
                             <h3
-                            class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
-                            Tags</h3>
+                                class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
+                                Tags</h3>
                             <div class="grid grid-cols-4 gap-4">
                                 @forelse ($tags as $tag)
                                     <div class="col-span-4 sm:col-span-2 md:col-span-1">
