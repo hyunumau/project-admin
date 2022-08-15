@@ -44,3 +44,5 @@ Route::group([
     Route::resource('article', 'ArticleController');
 });
 Route::get('/article', [ArticleController::class, 'getAll']);
+Route::get('/article/change/{id}', [ArticleController::class, 'changePublish']);
+Route::get('/article/{id}', [ArticleController::class, 'getById']);

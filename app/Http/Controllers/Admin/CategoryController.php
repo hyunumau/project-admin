@@ -17,7 +17,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = new Category;
-        $categories = $categories->latest()->paginate(5);
+        $categories = $categories->oldest()->paginate(5);
         return view('admin.category.index', compact('categories'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
@@ -116,6 +116,10 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->tags()->detach();
+        $category->articles()->detach();
+        $category->delete();
+        return redirect()->route('category.index')
+            ->with('message', 'Xoá thành công');
     }
 }

@@ -35,25 +35,33 @@
                         <div class="py-2">
                             <label for="author"
                                 class="block font-medium text-sm text-gray-700{{ $errors->has('author') ? ' text-red-400' : '' }}">{{ __('Author') }}</label>
-                            <input id="author"
+                            <input id="author" disabled
                                 class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full{{ $errors->has('author') ? ' border-red-400' : '' }}"
-                                type="text" name="author" value="{{ old('author', $article->author) }}" />
+                                type="text" name="author"
+                                value="{{ old('author', $article->authorInfo->name) }}" />
                         </div>
                         <div class="py-2">
                             <label for="detail"
                                 class="block font-medium text-sm text-gray-700{{ $errors->has('detail') ? ' text-red-400' : '' }}">{{ __('Detail') }}</label>
-                            <input id="detail"
-                                class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full{{ $errors->has('detail') ? ' border-red-400' : '' }}"
-                                type="text" name="detail" value="{{ old('detail', $article->detail) }}" />
+                            <textarea name="detail" id="detail" cols="30" rows="10">{{ $article->detail }}</textarea>
                         </div>
                         <div class="py-2">
                             <label for="image"
                                 class="block font-medium text-sm text-gray-700{{ $errors->has('image') ? ' text-red-400' : '' }}">{{ __('Image') }}</label>
-                            <input id="image"
-                                class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full{{ $errors->has('image') ? ' border-red-400' : '' }}"
-                                type="text" name="image" value="{{ old('image', $article->image) }}" />
+                            <div class="input-group flex flex-row" id="img2b64">
+                                <div class="basis-3/4">
+                                    <input type="url"
+                                        class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full{{ $errors->has('image') ? ' border-red-400' : '' }}"
+                                        placeholder="Insert an IMAGE-URL" value="{{ old('image', $article->image) }}" type="text" name="image"
+                                        required>
+                                </div>
+                                <button id="btn-load"
+                                    class="mx-4 inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">Load</button>
+                            </div>
+                            <div class="output mt-4">
+                                <img src="{{ old('image', $article->image) }}" style="max-height: 250px">
+                            </div>
                         </div>
-
                         <div class="py-2">
                             <h3
                                 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
@@ -102,4 +110,47 @@
             </div>
         </div>
     </div>
+    <x-slot name="scripts">
+        <script>
+            ClassicEditor
+                .create(document.querySelector('#detail'))
+                .catch(error => {
+                    console.error(error);
+                });
+
+            function convertImgToBase64(url, callback, outputFormat) {
+                var canvas = document.createElement('CANVAS');
+                var ctx = canvas.getContext('2d');
+                var img = new Image;
+                img.crossOrigin = 'Anonymous';
+                img.onload = function() {
+                    canvas.height = img.height;
+                    canvas.width = img.width;
+                    ctx.drawImage(img, 0, 0);
+                    var dataURL = canvas.toDataURL(outputFormat || 'image/png');
+                    callback.call(this, dataURL);
+                    // Clean up
+                    canvas = null;
+                };
+                img.src = url;
+            }
+
+            $('#btn-load').click(function(event) {
+                var imageUrl = $('#img2b64').find('input[name=image]').val();
+                convertImgToBase64(imageUrl, function(base64Img) {
+                    $('.output')
+                        .find('textarea')
+                        .val(base64Img)
+                        .end()
+                        .find('a')
+                        .attr('href', base64Img)
+                        .text(base64Img)
+                        .end()
+                        .find('img')
+                        .attr('src', base64Img);
+                });
+                event.preventDefault()
+            });
+        </script>
+    </x-slot>
 </x-app-layout>

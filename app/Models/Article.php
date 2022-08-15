@@ -9,7 +9,7 @@ class Article extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['caption', 'author', 'detail', 'image'];
+    protected $fillable = ['caption', 'author', 'detail', 'image', 'publish'];
 
     protected $dates = [
         'created_at',
@@ -24,5 +24,10 @@ class Article extends Model
     public function categories()
     {
         return $this->morphToMany(Category::class, 'cate_connect');
+    }
+
+    public function authorInfo()
+    {
+        return $this->belongsTo(User::class, 'author');
     }
 }

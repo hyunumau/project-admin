@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Role;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,10 +18,21 @@ class ArticleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    function __construct()
+    {
+
+    }
+
     public function index()
     {
+        $author = auth()->id();
         $articles = new Article;
-        $articles = $articles->latest()->paginate(5);;
+        if (! $author = auth()->user()->is_superadmin)
+            $articles = $articles->where('author', $author)->with(['authorInfo'])->latest()->paginate(5);
+        else {
+            $articles = $articles->with(['authorInfo'])->latest()->paginate(5);
+        }
+
         return view('admin.article.index', compact('articles'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
@@ -46,12 +59,15 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        $author = auth()->user()->id;
+        $request->author = $author;
         $dataInsert = $request->validate([
             'caption' => 'required',
-            'author' => 'required',
             'detail' => 'required',
             'image' => 'required',
+            'publish' => 'required'
         ]);
+        $dataInsert['author'] = auth()->user()->id;
 
         $addArticle = Article::create($dataInsert);
         $addCategory = [];
@@ -125,13 +141,11 @@ class ArticleController extends Controller
         }
         $dataInsert = $request->validate([
             'caption' => 'required',
-            'author' => 'required',
             'detail' => 'required',
             'image' => 'required',
         ]);
 
         $article->caption = $request->caption;
-        $article->author = $request->author;
         $article->detail = $request->detail;
         $article->image = $request->image;
         $addCategories = [];
@@ -162,6 +176,8 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
+        $article->tags()->detach();
+        $article->categories()->detach();
         $article->delete();
 
         return redirect()->route('article.index')
@@ -171,5 +187,18 @@ class ArticleController extends Controller
     public function getAll()
     {
         return Article::all();
+    }
+
+    public function getById($id)
+    {
+        return Article::find($id);
+    }
+
+    public function changePublish($id)
+    {
+        $article = Article::find($id);
+        $article->publish = !($article->publish);
+        $article->save();
+        return redirect()->route('article.index');
     }
 }

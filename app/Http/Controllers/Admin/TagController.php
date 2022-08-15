@@ -15,7 +15,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::latest()->paginate(5);
+        $tags = Tag::oldest()->paginate(5);
         return view('admin.tag.index', compact('tags'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
@@ -93,7 +93,8 @@ class TagController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Tag $tag)
-    {
+    {   
+        $tag->articles()->detach();
         $tag->delete();
         return redirect()->route('tag.index')
             ->with('message', 'Xoá thành công');

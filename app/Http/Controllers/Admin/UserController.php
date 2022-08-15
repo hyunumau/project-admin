@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
@@ -16,8 +17,8 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
-    {
+    function __construct(User $user)
+    {   
         $this->middleware('can:user read', ['only' => ['index', 'show']]);
         $this->middleware('can:user create', ['only' => ['create', 'store']]);
         $this->middleware('can:user edit', ['only' => ['edit', 'update']]);
@@ -41,7 +42,6 @@ class UserController extends Controller
         $roles = Role::all();
         return view('admin.user.create', compact('roles'));
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -132,7 +132,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user)
-    {
+    {   
         $user->delete();
         return redirect()->route('user.index')
             ->with('message', 'User deleted successfully');

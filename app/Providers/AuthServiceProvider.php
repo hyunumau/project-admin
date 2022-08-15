@@ -29,9 +29,8 @@ class AuthServiceProvider extends ServiceProvider
 
         // Cấp full quyền cho "Super-Admin", role all permission checks using can()
         Gate::before(function ($user, $ability) {
-            if ($user->hasRole('super-admin')) {
-                if ($user->hasRole(env('APP_SUPER_ADMIN', 'super-admin')))
-                    return true;
+            if ($user->is_superadmin) {
+                return true;
             }
         });
         //
