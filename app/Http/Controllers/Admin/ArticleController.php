@@ -54,13 +54,14 @@ class ArticleController extends Controller
     {
         $author = auth()->user()->id;
         $request->author = $author;
+
         $dataInsert = $request->validate([
             'caption' => 'required',
             'detail' => 'required',
             'image' => 'required',
-            'publish' => 'required'
         ]);
         $dataInsert['author'] = auth()->user()->id;
+        $dataInsert['publish'] = 0;
 
         $addArticle = Article::create($dataInsert);
         $addCategory = [];
@@ -101,6 +102,12 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
+        $categories = Category::all();
+        $tags = Tag::all();
+        $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
+        $articleHasTags = array_column(json_decode($article->tags, true), 'id');
+
+        return view('admin.article.show', compact('article', 'categories', 'articleHasCategories', 'tags', 'articleHasTags'));
     }
     /**
      * Show the form for editing the specified resource.
@@ -128,38 +135,41 @@ class ArticleController extends Controller
     public function update(Request $request, Article $article)
     {
         try {
-            //code...
+            $request->validate([
+                'caption' => 'required',
+                'detail' => 'required',
+                'image' => 'required',
+            ]);
+
+            $article->caption = $request->caption;
+            $article->detail = $request->detail;
+            $article->image = $request->image;
+            $addCategories = [];
+            $addTags = [];
+
+            foreach ($request->categories as $category) {
+                $cate_id = Category::where('name', $category)->first()->id;
+                array_push($addCategories, $cate_id);
+            }
+
+            foreach ($request->tags as $tag) {
+                $tag_id = Tag::where('name', $tag)->first()->id;
+                array_push($addTags, $tag_id);
+            }
+
+            $article->categories()->sync($addCategories);
+            $article->tags()->sync($addTags);
+            $article->save();
+
+            DB::commit();
+
+            return redirect()->route('article.index')
+                ->with('message', 'Cập nhật thành công');
         } catch (\Throwable $th) {
-            //throw $th;
+            DB::rollBack();
+
+            return back()->with('error', 'Sửa thất bại');
         }
-        $dataInsert = $request->validate([
-            'caption' => 'required',
-            'detail' => 'required',
-            'image' => 'required',
-        ]);
-
-        $article->caption = $request->caption;
-        $article->detail = $request->detail;
-        $article->image = $request->image;
-        $addCategories = [];
-        $addTags = [];
-
-        foreach ($request->categories as $category) {
-            $cate_id = Category::where('name', $category)->first()->id;
-            array_push($addCategories, $cate_id);
-        }
-
-        foreach ($request->tags as $tag) {
-            $tag_id = Tag::where('name', $tag)->first()->id;
-            array_push($addTags, $tag_id);
-        }
-
-        $article->categories()->sync($addCategories);
-        $article->tags()->sync($addTags);
-        $article->save();
-
-        return redirect()->route('article.index')
-            ->with('message', 'Cập nhật thành công');
     }
     /**
      * Remove the specified resource from storage.
@@ -190,19 +200,21 @@ class ArticleController extends Controller
     public function changePublish($id)
     {
         $article = Article::find($id);
+        $this->authorize('articles publish', $article);
         $article->publish = !($article->publish);
         $article->save();
+
         return redirect()->route('article.index');
     }
 
     public function getTagArticles($id)
     {
         $article = Article::find($id);
-        return($article->tags);
+        return ($article->tags);
     }
     public function getCategoryArticles($id)
     {
         $article = Article::find($id);
-        return($article->categories);
+        return ($article->categories);
     }
 }

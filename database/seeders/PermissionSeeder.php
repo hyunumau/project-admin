@@ -21,9 +21,6 @@ class PermissionSeeder extends Seeder
 
         Permission::insert([
             ['name' => 'permission read'],
-            ['name' => 'permission create'],
-            ['name' => 'permission edit'],
-            ['name' => 'permission delete'],
             ['name' => 'role read'],
             ['name' => 'role create'],
             ['name' => 'role edit'],
@@ -32,6 +29,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'user create'],
             ['name' => 'user edit'],
             ['name' => 'user delete'],
+            ['name' => 'articles publish'],
         ]);
     }
 }

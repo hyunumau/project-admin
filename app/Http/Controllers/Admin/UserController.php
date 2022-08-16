@@ -38,6 +38,8 @@ class UserController extends Controller
      */
     public function create()
     {
+        $userCheck = new User;
+        $this->authorize('user create', $userCheck);
         $roles = Role::all();
         return view('admin.user.create', compact('roles'));
     }
@@ -50,6 +52,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $userCheck = new User;
+        $this->authorize('user create', $userCheck);
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -75,6 +79,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $this->authorize('user read', $user);
         $roles = Role::all();
         $userRoles = array_column(json_decode($user->roles, true), 'id');
         return view('admin.user.show', compact('user', 'roles', 'userRoles'));
@@ -88,6 +93,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('user edit', $user);
         $roles = Role::all();
         $userHasRoles = array_column(json_decode($user->roles, true), 'id');
         return view('admin.user.edit', compact('user', 'roles', 'userHasRoles'));
@@ -103,6 +109,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $this->authorize('user edit', $user);
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
@@ -130,6 +137,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {   
+        $this->authorize('user delete', $user);
         $user->delete();
         return redirect()->route('user.index')
             ->with('message', 'User deleted successfully');
@@ -138,5 +146,13 @@ class UserController extends Controller
     public function getUserById($id)
     {
         return User::find($id);
+    }
+
+    public function dashboard()
+    {   
+        $user = User::find(auth()->id());
+        $roles = Role::all();
+        $userRoles = array_column(json_decode($user->roles, true), 'id');
+        return view('dashboard', compact('user', 'roles', 'userRoles'));
     }
 }

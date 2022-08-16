@@ -102,8 +102,10 @@ class CategoryController extends Controller
             $tag_id = Tag::where('name', $tag)->first()->id;
             array_push($addTag, $tag_id);
         }
-        $category->tags()->sync($addTag);   
-
+        $category->name = $request->name;
+        $category->tags()->sync($addTag);
+        $category->save();
+        
         return redirect()->route('category.index')
             ->with('message', 'Cập nhật thành công');
     }

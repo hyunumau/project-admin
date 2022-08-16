@@ -93,20 +93,6 @@
                                 @endforelse
                             </div>
                         </div>
-                        <div class="py-2">
-                            <h3
-                                class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
-                                Publish</h3>
-                            <div>
-                                <input type="radio" id="publish" name="publish" value="1">
-                                <label for="publish">Publish</label>
-                            </div>
-
-                            <div>
-                                <input type="radio" id="unpublish" name="publish" value="0" checked>
-                                <label for="unpublish">Unpublish</label>
-                            </div>
-                        </div>
                 </div>
                 <div class="flex justify-end m-4">
                     <button type='submit'
