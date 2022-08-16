@@ -43,43 +43,45 @@
                                     </thead>
                                     <tbody class="bg-white dark:bg-slate-800">
                                         @foreach ($users as $user)
-                                            <tr>
-                                                <td
-                                                    class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                                                    <div class="text-sm text-gray-900">
-                                                        <a href="{{ route('user.show', $user->id) }}"
-                                                            class="no-underline hover:underline text-cyan-600 dark:text-cyan-400">{{ $user->name }}</a>
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                                                    <div class="text-sm text-gray-900">
-                                                        {{ $user->email }}
-                                                    </div>
-                                                </td>
-                                                @canany(['user edit', 'user delete'])
+                                            @if (!$user->is_superadmin)
+                                                <tr>
                                                     <td
                                                         class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                                                        <form action="{{ route('user.destroy', $user->id) }}"
-                                                            method="POST">
-                                                            @can('user edit')
-                                                                <a href="{{ route('user.edit', $user->id) }}"
-                                                                    class="px-4 py-2 text-white mr-4 bg-blue-600">
-                                                                    {{ __('Edit') }}
-                                                                </a>
-                                                            @endcan
-                                                            @can('user delete')
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button class="px-4 py-2 text-white bg-red-600"
-                                                                    onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
-                                                                    {{ __('Delete') }}
-                                                                </button>
-                                                            @endcan
-                                                        </form>
+                                                        <div class="text-sm text-gray-900">
+                                                            <a href="{{ route('user.show', $user->id) }}"
+                                                                class="no-underline hover:underline text-cyan-600 dark:text-cyan-400">{{ $user->name }}</a>
+                                                        </div>
                                                     </td>
-                                                @endcanany
-                                            </tr>
+                                                    <td
+                                                        class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                        <div class="text-sm text-gray-900">
+                                                            {{ $user->email }}
+                                                        </div>
+                                                    </td>
+                                                    @canany(['user edit', 'user delete'])
+                                                        <td 
+                                                            class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                            <form action="{{ route('user.destroy', $user->id) }}"
+                                                                method="POST">
+                                                                @can('user edit')
+                                                                    <a href="{{ route('user.edit', $user->id) }}"
+                                                                        class="px-4 py-2 text-white mr-4 bg-blue-600">
+                                                                        {{ __('Edit') }}
+                                                                    </a>
+                                                                @endcan
+                                                                @can('user delete')
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button class="px-4 py-2 text-white bg-red-600"
+                                                                        onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
+                                                                        {{ __('Delete') }}
+                                                                    </button>
+                                                                @endcan
+                                                            </form>
+                                                        </td>
+                                                    @endcanany
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     </tbody>
                                 </table>

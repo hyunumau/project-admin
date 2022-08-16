@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,3 +48,6 @@ Route::group([
 Route::get('/article', [ArticleController::class, 'getAll']);
 Route::get('/article/change/{id}', [ArticleController::class, 'changePublish']);
 Route::get('/article/{id}', [ArticleController::class, 'getById']);
+Route::get('/articletag/{id}', [ArticleController::class, 'getTagArticles']);
+Route::get('/articlecategory/{id}', [ArticleController::class, 'getCategoryArticles']);
+Route::get('/user/{id}', [UserController::class, 'getUserById']);

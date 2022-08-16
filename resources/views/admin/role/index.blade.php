@@ -25,7 +25,8 @@
                                 <table class="border-collapse table-auto w-full text-sm">
                                     <thead>
                                         <tr>
-                                            <th class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
+                                            <th
+                                                class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
                                                 NAME
                                             </th>
                                             @canany(['role edit', 'role delete'])
@@ -46,28 +47,30 @@
                                                             class="no-underline hover:underline text-cyan-600 dark:text-cyan-400">{{ $role->name }}</a>
                                                     </div>
                                                 </td>
-                                                @canany(['role edit', 'role delete'])
-                                                    <td
-                                                        class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                                                        <form action="{{ route('role.destroy', $role->id) }}"
-                                                            method="POST">
-                                                            @can('role edit')
-                                                                <a href="{{ route('role.edit', $role->id) }}"
-                                                                    class="px-4 py-2 text-white mr-4 bg-blue-600">
-                                                                    {{ __('Edit') }}
-                                                                </a>
-                                                            @endcan
-                                                            @can('role delete')
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button class="px-4 py-2 text-white bg-red-600"
-                                                                    onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
-                                                                    {{ __('Delete') }}
-                                                                </button>
-                                                            @endcan
-                                                        </form>
-                                                    </td>
-                                                @endcanany
+                                                @if ($role->id !== 1)
+                                                    @canany(['role edit', 'role delete'])
+                                                        <td
+                                                            class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                            <form action="{{ route('role.destroy', $role->id) }}"
+                                                                method="POST">
+                                                                @can('role edit')
+                                                                    <a href="{{ route('role.edit', $role->id) }}"
+                                                                        class="px-4 py-2 text-white mr-4 bg-blue-600">
+                                                                        {{ __('Edit') }}
+                                                                    </a>
+                                                                @endcan
+                                                                @can('role delete')
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button class="px-4 py-2 text-white bg-red-600"
+                                                                        onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
+                                                                        {{ __('Delete') }}
+                                                                    </button>
+                                                                @endcan
+                                                            </form>
+                                                        </td>
+                                                    @endcanany
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>

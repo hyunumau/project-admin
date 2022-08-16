@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
-use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,22 +17,16 @@ class ArticleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
-    {
-
-    }
 
     public function index()
     {
         $author = auth()->id();
+        $authoredit = User::find($author);
         $articles = new Article;
-        if (! $author = auth()->user()->is_superadmin)
-            $articles = $articles->where('author', $author)->with(['authorInfo'])->latest()->paginate(5);
-        else {
-            $articles = $articles->with(['authorInfo'])->latest()->paginate(5);
-        }
 
-        return view('admin.article.index', compact('articles'))
+        $articles = $articles->with(['authorInfo'])->latest()->paginate(5);
+
+        return view('admin.article.index', compact('articles', 'authoredit'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
@@ -200,5 +193,16 @@ class ArticleController extends Controller
         $article->publish = !($article->publish);
         $article->save();
         return redirect()->route('article.index');
+    }
+
+    public function getTagArticles($id)
+    {
+        $article = Article::find($id);
+        return($article->tags);
+    }
+    public function getCategoryArticles($id)
+    {
+        $article = Article::find($id);
+        return($article->categories);
     }
 }

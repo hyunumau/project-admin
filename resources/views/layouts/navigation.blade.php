@@ -14,15 +14,21 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('permission.index')" :active="request()->routeIs('permission.index')">
-                        {{ __('Permission') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('role.index')" :active="request()->routeIs('role.index')">
-                        {{ __('Role') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
-                        {{ __('Users') }}
-                    </x-nav-link>
+                    @can('permisson read')
+                        <x-nav-link :href="route('permission.index')" :active="request()->routeIs('permission.index')">
+                            {{ __('Permission') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('role read')
+                        <x-nav-link :href="route('role.index')" :active="request()->routeIs('role.index')">
+                            {{ __('Role') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('user read')
+                        <x-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
+                            {{ __('Users') }}
+                        </x-nav-link>
+                    @endcan
                     <x-nav-link :href="route('article.index')" :active="request()->routeIs('article.index')">
                         {{ __('Articles') }}
                     </x-nav-link>
@@ -91,9 +97,11 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('permission.index')" :active="request()->routeIs('permission.index')">
-                {{ __('Permission') }}
-            </x-responsive-nav-link>
+            @can('permission read')
+                <x-responsive-nav-link :href="route('permission.index')" :active="request()->routeIs('permission.index')">
+                    {{ __('Permission') }}
+                </x-responsive-nav-link>
+            @endcan
             <x-responsive-nav-link :href="route('role.index')" :active="request()->routeIs('role.index')">
                 {{ __('Roles') }}
             </x-responsive-nav-link>

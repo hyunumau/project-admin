@@ -33,11 +33,11 @@
                                                 class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
                                                 CAPTION
                                             </th>
-                                            @can('publish')
-                                            <th
-                                                class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
-                                                PUBLISH
-                                            </th>
+                                            @can('articles publish')
+                                                <th
+                                                    class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
+                                                    PUBLISH
+                                                </th>
                                             @endcan
                                             <th
                                                 class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
@@ -68,21 +68,21 @@
                                                         {{ $article->caption }}
                                                     </div>
                                                 </td>
-                                                @can('publish')
-                                                <td
-                                                    class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                                                    <div class="text-sm text-gray-900">
-                                                        <?php
-                                                        if ($article->publish) {
-                                                            # code...
-                                                            echo '<a href="/article/change/'.$article->id.'" class="attachment-upload px-4 py-2 text-white mr-4 bg-green-600">Publish</a>';
-                                                        } else {
-                                                            # code...
-                                                            echo '<a href="/article/change/'.$article->id.'" class="attachment-upload px-4 py-2 text-white mr-4 bg-yellow-600">Unpublish</a>';
-                                                        }
-                                                        ?>
-                                                    </div>
-                                                </td>
+                                                @can('articles publish')
+                                                    <td
+                                                        class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                        <div class="text-sm text-gray-900">
+                                                            <?php
+                                                            if ($article->publish) {
+                                                                # code...
+                                                                echo '<a href="/article/change/' . $article->id . '" class="attachment-upload px-4 py-2 text-white mr-4 bg-green-600">Publish</a>';
+                                                            } else {
+                                                                # code...
+                                                                echo '<a href="/article/change/' . $article->id . '" class="attachment-upload px-4 py-2 text-white mr-4 bg-yellow-600">Unpublish</a>';
+                                                            }
+                                                            ?>
+                                                        </div>
+                                                    </td>
                                                 @endcan
                                                 <td
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
@@ -96,23 +96,43 @@
                                                         <img src="{{ $article->image }}" />
                                                     </div>
                                                 </td>
-                                                <td
-                                                    class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                                                    <form action="{{ route('article.destroy', $article->id) }}"
-                                                        method="POST">
-                                                        <a href="{{ route('article.edit', $article->id) }}"
-                                                            class="px-4 py-2 text-white mr-4 bg-blue-600">
-                                                            {{ __('Edit') }}
-                                                        </a>
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="px-4 py-2 text-white bg-red-600"
-                                                            onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
-                                                            {{ __('Delete') }}
-                                                        </button>
-                                                    </form>
-                                                </td>
-
+                                                @if ($authoredit->is_superadmin)
+                                                    <td
+                                                        class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                        <form action="{{ route('article.destroy', $article->id) }}"
+                                                            method="POST">
+                                                            <a href="{{ route('article.edit', $article->id) }}"
+                                                                class="px-4 py-2 text-white mr-4 bg-blue-600">
+                                                                {{ __('Edit') }}
+                                                            </a>
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="px-4 py-2 text-white bg-red-600"
+                                                                onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
+                                                                {{ __('Delete') }}
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                @else
+                                                    @if ($article->author == $authoredit->id)
+                                                        <td
+                                                            class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                            <form action="{{ route('article.destroy', $article->id) }}"
+                                                                method="POST">
+                                                                <a href="{{ route('article.edit', $article->id) }}"
+                                                                    class="px-4 py-2 text-white mr-4 bg-blue-600">
+                                                                    {{ __('Edit') }}
+                                                                </a>
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button class="px-4 py-2 text-white bg-red-600"
+                                                                    onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
+                                                                    {{ __('Delete') }}
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    @endif
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
