@@ -89,7 +89,7 @@
                                                 <td
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                     <div class="text-sm text-gray-900">
-                                                        <img src="{{ $article->image }}" />
+                                                        <img src="{{ $article->image_url }}" />
                                                     </div>
                                                 </td>
                                                 @if ($authoredit->is_superadmin)

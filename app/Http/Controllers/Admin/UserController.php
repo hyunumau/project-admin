@@ -3,33 +3,37 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Models\Role;
-use Illuminate\Http\Request;    
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use App\Services\UserService;
 
 class UserController extends Controller
 {
+    protected $userService;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct(User $user)
-    {   
-        $this->middleware('can:user read', ['only' => ['index', 'show']]);
+    function __construct(UserService $userService)
+    {
+        $this->middleware('can:user list', ['only' => ['index', 'show']]);
         $this->middleware('can:user create', ['only' => ['create', 'store']]);
         $this->middleware('can:user edit', ['only' => ['edit', 'update']]);
         $this->middleware('can:user delete', ['only' => ['destroy']]);
+
+        $this->userService = $userService;
     }
 
     public function index()
     {
-        $users = new User;
-        $users = $users->latest()->paginate(5);
-        return view('admin.user.index', compact('users'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        $filter = ['paginate' => 5];
+        $users = $this->userService->getList($filter);
+
+        return view('admin.user.index', compact('users'));
     }
     /**
      * Show the form for creating a new resource.
@@ -38,11 +42,10 @@ class UserController extends Controller
      */
     public function create()
     {
-        $userCheck = new User;
-        $this->authorize('user create', $userCheck);
         $roles = Role::all();
         return view('admin.user.create', compact('roles'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -50,23 +53,10 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $userCheck = new User;
-        $this->authorize('user create', $userCheck);
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        if (!empty($request->roles)) {
-            $user->assignRole($request->roles);
-        }
+        $this->userService->create($request->validated());
+
         return redirect()->route('user.index')
             ->with('message', 'Tạo thành công');
     }
@@ -79,7 +69,6 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $this->authorize('user read', $user);
         $roles = Role::all();
         $userRoles = array_column(json_decode($user->roles, true), 'id');
         return view('admin.user.show', compact('user', 'roles', 'userRoles'));
@@ -93,7 +82,6 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $this->authorize('user edit', $user);
         $roles = Role::all();
         $userHasRoles = array_column(json_decode($user->roles, true), 'id');
         return view('admin.user.edit', compact('user', 'roles', 'userHasRoles'));
@@ -107,23 +95,10 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $this->authorize('user edit', $user);
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-        ]);
-        $user->update([
-            'name' => $request->name,
-        ]);
-        if ($request->password) {
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
-        }
-        $roles = $request->roles ?? [];
-        $user->syncRoles($roles);
+        $this->userService->update($request->validated(), $user);
+        
         return redirect()->route('user.index')
             ->with('message', 'User updated successfully.');
     }
@@ -136,21 +111,15 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user)
-    {   
-        $this->authorize('user delete', $user);
+    {
         $user->delete();
         return redirect()->route('user.index')
             ->with('message', 'User deleted successfully');
     }
 
-    public function getUserById($id)
-    {
-        return User::find($id);
-    }
-
     public function dashboard()
-    {   
-        $user = User::find(auth()->id());
+    {
+        $user = auth()->user();
         $roles = Role::all();
         $userRoles = array_column(json_decode($user->roles, true), 'id');
         return view('dashboard', compact('user', 'roles', 'userRoles'));

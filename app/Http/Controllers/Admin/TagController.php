@@ -4,10 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
+use App\Services\TagService;
 use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
+    protected $tagService;
+
+    function __construct(TagService $tagService)
+    {
+        $this->tagService = $tagService;
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -15,9 +24,10 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::oldest()->paginate(5);
-        return view('admin.tag.index', compact('tags'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        $filter = ['paginate' => 5];
+        $tags = $this->tagService->getList($filter);
+
+        return view('admin.tag.index', compact('tags'));
     }
 
     /**
@@ -38,10 +48,7 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        $dataInsert = $request->validate([
-            'name' => 'required',
-        ]);
-        Tag::create($dataInsert);
+        $tags = $this->tagService->create($request);
 
         return redirect()->route('tag.index')
             ->with('message', 'Tạo thành công');
@@ -77,11 +84,8 @@ class TagController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
-        $request->validate([
-            'name' => 'required',
-        ]);
-        $tag->name = $request->name;
-        $tag->save();
+        $this->tagService->update($request, $tag);
+
         return redirect()->route('tag.index')
             ->with('message', 'Cập nhật thành công');
     }
@@ -93,9 +97,9 @@ class TagController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Tag $tag)
-    {   
-        $tag->articles()->detach();
-        $tag->delete();
+    {
+        $tags = $this->tagService->delete($tag);
+
         return redirect()->route('tag.index')
             ->with('message', 'Xoá thành công');
     }

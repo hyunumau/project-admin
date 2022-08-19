@@ -17,7 +17,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = new Category;
-        $categories = $categories->oldest()->paginate(5);
+        $categories = $categories->latest()->paginate(5);
         return view('admin.category.index', compact('categories'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
@@ -102,10 +102,8 @@ class CategoryController extends Controller
             $tag_id = Tag::where('name', $tag)->first()->id;
             array_push($addTag, $tag_id);
         }
-        $category->name = $request->name;
-        $category->tags()->sync($addTag);
-        $category->save();
-        
+        $category->tags()->sync($addTag);   
+
         return redirect()->route('category.index')
             ->with('message', 'Cập nhật thành công');
     }
@@ -118,10 +116,6 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $category->tags()->detach();
-        $category->articles()->detach();
-        $category->delete();
-        return redirect()->route('category.index')
-            ->with('message', 'Xoá thành công');
+        //
     }
 }

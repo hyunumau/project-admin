@@ -3,31 +3,37 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Services\ArticleService;
+
 
 class ArticleController extends Controller
 {
+    protected $articleService;
+
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct(ArticleService $articleService)
+    {
+        $this->articleService = $articleService;
+    }
 
     public function index()
     {
-        $author = auth()->id();
-        $authoredit = User::find($author);
-        $articles = new Article;
 
-        $articles = $articles->with(['authorInfo'])->latest()->paginate(5);
+        $filter = ['paginate' => 5];
+        $articles = $this->articleService->getList($filter);
 
-        return view('admin.article.index', compact('articles', 'authoredit'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        $authoredit = auth()->user();
+        return view('admin.article.index', compact('articles', 'authoredit'));
     }
 
     /**
@@ -50,48 +56,16 @@ class ArticleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreArticleRequest $request)
     {
-        $author = auth()->user()->id;
-        $request->author = $author;
+        $article = $this->articleService->create($request->validated());
 
-        $dataInsert = $request->validate([
-            'caption' => 'required',
-            'detail' => 'required',
-            'image' => 'required',
-        ]);
-        $dataInsert['author'] = auth()->user()->id;
-        $dataInsert['publish'] = 0;
-
-        $addArticle = Article::create($dataInsert);
-        $addCategory = [];
-        $addTag = [];
-
-        DB::beginTransaction();
-
-        try {
-            foreach ($request->categories as $category) {
-                $cate_id = Category::where('name', $category)->first()->id;
-                array_push($addCategory, $cate_id);
-            }
-
-            foreach ($request->tags as $tag) {
-                $tag_id = Tag::where('name', $tag)->first()->id;
-                array_push($addTag, $tag_id);
-            }
-
-            $addArticle->categories()->sync($addCategory);
-            $addArticle->tags()->sync($addTag);
-
-            DB::commit();
-
-            return redirect()->route('article.index')
-                ->with('message', 'Tạo thành công');
-        } catch (\Exception $e) {
-            DB::rollBack();
-
+        if (is_null($article)) {
             return back()->with('error', 'Thêm thất bại');
         }
+
+        return redirect()->route('article.index')
+            ->with('message', 'Tạo thành công');
     }
 
     /**
@@ -102,12 +76,6 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
-        $categories = Category::all();
-        $tags = Tag::all();
-        $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
-        $articleHasTags = array_column(json_decode($article->tags, true), 'id');
-
-        return view('admin.article.show', compact('article', 'categories', 'articleHasCategories', 'tags', 'articleHasTags'));
     }
     /**
      * Show the form for editing the specified resource.
@@ -132,44 +100,12 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Article $article)
+    public function update(UpdateArticleRequest $request, Article $article)
     {
-        try {
-            $request->validate([
-                'caption' => 'required',
-                'detail' => 'required',
-                'image' => 'required',
-            ]);
+        $this->articleService->update($request->validated(), $article);
 
-            $article->caption = $request->caption;
-            $article->detail = $request->detail;
-            $article->image = $request->image;
-            $addCategories = [];
-            $addTags = [];
-
-            foreach ($request->categories as $category) {
-                $cate_id = Category::where('name', $category)->first()->id;
-                array_push($addCategories, $cate_id);
-            }
-
-            foreach ($request->tags as $tag) {
-                $tag_id = Tag::where('name', $tag)->first()->id;
-                array_push($addTags, $tag_id);
-            }
-
-            $article->categories()->sync($addCategories);
-            $article->tags()->sync($addTags);
-            $article->save();
-
-            DB::commit();
-
-            return redirect()->route('article.index')
-                ->with('message', 'Cập nhật thành công');
-        } catch (\Throwable $th) {
-            DB::rollBack();
-
-            return back()->with('error', 'Sửa thất bại');
-        }
+        return redirect()->route('article.index')
+            ->with('message', 'Cập nhật thành công');
     }
     /**
      * Remove the specified resource from storage.
@@ -179,42 +115,17 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
-        $article->tags()->detach();
-        $article->categories()->detach();
-        $article->delete();
+        $this->articleService->delete($article);
 
         return redirect()->route('article.index')
             ->with('message', 'Xoá thành công');
     }
 
-    public function getAll()
-    {
-        return Article::all();
-    }
-
-    public function getById($id)
-    {
-        return Article::find($id);
-    }
-
     public function changePublish($id)
     {
         $article = Article::find($id);
-        $this->authorize('articles publish', $article);
         $article->publish = !($article->publish);
         $article->save();
-
         return redirect()->route('article.index');
-    }
-
-    public function getTagArticles($id)
-    {
-        $article = Article::find($id);
-        return ($article->tags);
-    }
-    public function getCategoryArticles($id)
-    {
-        $article = Article::find($id);
-        return ($article->categories);
     }
 }

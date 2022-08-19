@@ -28,7 +28,7 @@
                     @endif
                 </div>
                 <div class="w-full px-6 py-4 bg-white overflow-hidden">
-                    <form method="POST" action="{{ route('article.store') }}">
+                    <form method="POST" action="{{ route('article.store') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="py-2">
                             <label for="caption"
@@ -45,15 +45,14 @@
                         <div class="py-2">
                             <label for="image"
                                 class="block font-medium text-sm text-gray-700{{ $errors->has('image') ? ' text-red-400' : '' }}">{{ __('Image') }}</label>
-                            <div class="input-group flex flex-row" id="img2b64">
-                                <div class="basis-3/4">
-                                    <input type="url"
-                                        class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full{{ $errors->has('image') ? ' border-red-400' : '' }}"
-                                        placeholder="Insert an IMAGE-URL" value="" type="text" name="image"
-                                        required>
+                            <div class="input-group flex flex-col" id="img2b64">
+                                <div class="border-dashed rounded border-grey-400 border-2 p-2">
+                                    <input type="file" placeholder="Insert an IMAGE-URL" value=""
+                                        type="text" name="image" required>
                                 </div>
-                                <button id="btn-load"
-                                    class="mx-4 inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">Load</button>
+                                <div class="mt-4">
+                                    <img id="img-preview" />
+                                </div>
                             </div>
                             <div class="output mt-4">
                                 <img style="max-height: 250px">
@@ -67,7 +66,7 @@
                                 @forelse ($categories as $category)
                                     <div class="col-span-4 sm:col-span-2 md:col-span-1">
                                         <label class="form-check-label">
-                                            <input type="checkbox" name="categories[]" value="{{ $category->name }}"
+                                            <input type="checkbox" name="categories[]" value="{{ $category->id }}"
                                                 class="roundZed border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                             {{ $category->name }}
                                         </label>
@@ -83,7 +82,7 @@
                                 @forelse ($tags as $tag)
                                     <div class="col-span-4 sm:col-span-2 md:col-span-1">
                                         <label class="form-check-label">
-                                            <input type="checkbox" name="tags[]" value="{{ $tag->name }}"
+                                            <input type="checkbox" name="tags[]" value="{{ $tag->id }}"
                                                 class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                             {{ $tag->name }}
                                         </label>
@@ -113,40 +112,17 @@
                 .catch(error => {
                     console.error(error);
                 });
-
-            function convertImgToBase64(url, callback, outputFormat) {
-                var canvas = document.createElement('CANVAS');
-                var ctx = canvas.getContext('2d');
-                var img = new Image;
-                img.crossOrigin = 'Anonymous';
-                img.onload = function() {
-                    canvas.height = img.height;
-                    canvas.width = img.width;
-                    ctx.drawImage(img, 0, 0);
-                    var dataURL = canvas.toDataURL(outputFormat || 'image/png');
-                    callback.call(this, dataURL);
-                    // Clean up
-                    canvas = null;
+            $('input[name="image"]').on('change', function () {
+                $('#img-preview').attr('src', '');
+                const file = this.files[0];
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    $('#img-preview').attr('src', reader.result);
                 };
-                img.src = url;
-            }
-
-            $('#btn-load').click(function(event) {
-                var imageUrl = $('#img2b64').find('input[name=image]').val();
-                convertImgToBase64(imageUrl, function(base64Img) {
-                    $('.output')
-                        .find('textarea')
-                        .val(base64Img)
-                        .end()
-                        .find('a')
-                        .attr('href', base64Img)
-                        .text(base64Img)
-                        .end()
-                        .find('img')
-                        .attr('src', base64Img);
-                });
-                event.preventDefault()
-            });
+                if (file) {
+                    reader.readAsDataURL(file);
+                }
+            })
         </script>
     </x-slot>
 </x-app-layout>
