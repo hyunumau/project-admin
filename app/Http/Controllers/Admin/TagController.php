@@ -24,7 +24,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $filter = ['paginate' => 5];
+        $filter = [];
         $tags = $this->tagService->getList($filter);
 
         return view('admin.tag.index', compact('tags'));

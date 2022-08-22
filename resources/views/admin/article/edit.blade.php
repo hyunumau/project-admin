@@ -22,39 +22,32 @@
                     @endif
                 </div>
                 <div class="w-full px-6 py-4 bg-white overflow-hidden">
-                    <form method="POST" action="{{ route('article.update', $article->id) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('article.update', $article->id) }}"
+                        enctype="multipart/form-data">
                         @method('PUT')
                         @csrf
                         <div class="py-2">
-                            <label for="caption"
-                                class="block font-medium text-sm text-gray-700{{ $errors->has('caption') ? ' text-red-400' : '' }}">{{ __('Caption') }}</label>
-                            <input id="caption"
-                                class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full{{ $errors->has('caption') ? ' border-red-400' : '' }}"
-                                type="text" name="caption" value="{{ old('caption', $article->caption) }}" />
+                            <x-forms.input name="caption" value="{{ old('caption', $article->caption) }}"
+                                required="true" label="{{ __('Caption') }}" />
                         </div>
                         <div class="py-2">
-                            <label for="author"
-                                class="block font-medium text-sm text-gray-700{{ $errors->has('author') ? ' text-red-400' : '' }}">{{ __('Author') }}</label>
-                            <input id="author" disabled
-                                class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full{{ $errors->has('author') ? ' border-red-400' : '' }}"
-                                type="text" name="author"
-                                value="{{ old('author', $article->authorInfo->name) }}" />
+                            <x-forms.input name="author" disabled
+                                value="{{ old('author', $article->authorInfo->name) }}" required="true"
+                                label="{{ __('Author') }}" />
                         </div>
                         <div class="py-2">
-                            <label for="detail"
-                                class="block font-medium text-sm text-gray-700{{ $errors->has('detail') ? ' text-red-400' : '' }}">{{ __('Detail') }}</label>
-                            <textarea name="detail" id="detail" cols="30" rows="10">{{ $article->detail }}</textarea>
+                            <x-forms.input type="textarea" id="detail" cols="30" rows="10" name="detail"
+                                :value="$article->detail" required="true" label="{{ __('Detail') }}" />
                         </div>
                         <div class="py-2">
                             <label for="image"
                                 class="block font-medium text-sm text-gray-700{{ $errors->has('image') ? ' text-red-400' : '' }}">{{ __('Image') }}</label>
                             <div class="input-group flex flex-col" id="img2b64">
                                 <div class="border-dashed rounded border-grey-400 border-2 p-2">
-                                    <input type="file" placeholder="Insert an IMAGE-URL"
-                                        type="text" name="image">
+                                    <x-forms.input type="file" name="image" required="true" />
                                 </div>
                                 <div class="mt-4">
-                                    <img id="img-preview" src="{{ $article->image_url }}"/>
+                                    <img id="img-preview" src="{{ $article->image_url }}" />
                                 </div>
                             </div>
                         </div>
@@ -63,35 +56,13 @@
                                 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
                                 Categories</h3>
                             <div class="grid grid-cols-4 gap-4">
-                                @forelse ($categories as $category)
-                                    <div class="col-span-4 sm:col-span-2 md:col-span-1">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" name="categories[]" value="{{ $category->id }}"
-                                                {{ in_array($category->id, $articleHasCategories) ? 'checked' : '' }}
-                                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                            {{ $category->name }}
-                                        </label>
-                                    </div>
-                                @empty
-                                    ----
-                                @endforelse
+                                <x-forms.checkbox id="1" name="categories[]" :items="$categories" :selected="$articleHasCategories" />
                             </div>
                             <h3
                                 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
                                 Tags</h3>
                             <div class="grid grid-cols-4 gap-4">
-                                @forelse ($tags as $tag)
-                                    <div class="col-span-4 sm:col-span-2 md:col-span-1">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" name="tags[]" value="{{ $tag->id }}"
-                                                {{ in_array($tag->id, $articleHasTags) ? 'checked' : '' }}
-                                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                            {{ $tag->name }}
-                                        </label>
-                                    </div>
-                                @empty
-                                    ----
-                                @endforelse
+                                <x-forms.checkbox id="1" name="tags[]" :items="$tags" :selected="$articleHasTags" />
                             </div>
                         </div>
 

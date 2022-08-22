@@ -9,7 +9,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Services\ArticleService;
-
+use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
@@ -26,14 +26,19 @@ class ArticleController extends Controller
         $this->articleService = $articleService;
     }
 
-    public function index()
-    {
-
-        $filter = ['paginate' => 5];
+    public function index(Request $request)
+    {   
+        $article = Article::query();
+        
+        $filter = [];
+        //     'search' => $request->query()['search'] ?? [],
+        // ];
+        
         $articles = $this->articleService->getList($filter);
+        $categories = Category::all();
 
         $authoredit = auth()->user();
-        return view('admin.article.index', compact('articles', 'authoredit'));
+        return view('admin.article.index', compact('articles', 'authoredit', 'categories'));
     }
 
     /**
@@ -76,7 +81,16 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
+        $this->authorize('update-article', $article);
+
+        $categories = Category::all();
+        $tags = Tag::all();
+        $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
+        $articleHasTags = array_column(json_decode($article->tags, true), 'id');
+
+        return view('admin.article.show', compact('article', 'categories', 'articleHasCategories', 'tags', 'articleHasTags'));
     }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -85,6 +99,8 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
+        $this->authorize('update-article', $article);
+
         $categories = Category::all();
         $tags = Tag::all();
         $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
@@ -102,8 +118,10 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, Article $article)
     {
-        $this->articleService->update($request->validated(), $article);
+        $this->authorize('update-article', $article);
 
+        $this->articleService->update($request->validated(), $article);
+        
         return redirect()->route('article.index')
             ->with('message', 'Cập nhật thành công');
     }

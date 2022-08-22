@@ -3,12 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+
+    protected $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,10 +26,10 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = new Category;
-        $categories = $categories->latest()->paginate(5);
-        return view('admin.category.index', compact('categories'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        $filter = [];
+        $categories = $this->categoryService->getList($filter);
+
+        return view('admin.category.index', compact('categories'));
     }
 
     /**
@@ -40,20 +50,13 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $dataInsert = $request->validate([
-            'name' => 'required',
-        ]);
+        $category = $this->categoryService->create($request->validated());
 
-        $addCategory = Category::create($dataInsert);
-        $addTag = [];
-
-        foreach ($request->tags as $tag) {
-            $tag_id = Tag::where('name', $tag)->first()->id;
-            array_push($addTag, $tag_id);
+        if (is_null($category)) {
+            return back()->with('error', 'Thêm thất bại');
         }
-        $addCategory->tags()->syncWithoutDetaching($addTag);
 
         return redirect()->route('category.index')
             ->with('message', 'Tạo thành công');
@@ -90,19 +93,13 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(StoreCategoryRequest $request, Category $category)
     {
-        $dataInsert = $request->validate([
-            'name' => 'required',
-        ]);
+        $this->categoryService->update($request->validated(), $category);
 
-        $addTag = [];
-
-        foreach ($request->tags as $tag) {
-            $tag_id = Tag::where('name', $tag)->first()->id;
-            array_push($addTag, $tag_id);
+        if (is_null($category)) {
+            return back()->with('error', 'Cập nhật thất bại');
         }
-        $category->tags()->sync($addTag);   
 
         return redirect()->route('category.index')
             ->with('message', 'Cập nhật thành công');
@@ -116,6 +113,9 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $this->categoryService->delete($category);
+
+        return redirect()->route('category.index')
+        ->with('message', 'Xoá thành công');
     }
 }

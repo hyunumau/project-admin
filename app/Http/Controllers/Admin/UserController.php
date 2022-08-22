@@ -30,7 +30,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $filter = ['paginate' => 5];
+        $filter = [];
         $users = $this->userService->getList($filter);
 
         return view('admin.user.index', compact('users'));

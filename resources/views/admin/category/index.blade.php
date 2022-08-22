@@ -20,7 +20,7 @@
                                 </div>
                             @endif
                             <div class="min-w-full border-b border-gray-200 shadow">
-                                <table class="border-collapse table-auto w-full text-sm">
+                                <table class="border-collapse table-auto w-full text-sm" id="table_id">
                                     <thead>
                                         <tr>
                                             <th class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
@@ -63,13 +63,17 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="py-8">
-                                {{ $categories->appends(request()->query())->links() }}
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <x-slot name="scripts">
+        <script>
+            $(document).ready(function() {
+                $('#table_id').DataTable();
+            });
+        </script>
+    </x-slot>
 </x-app-layout>

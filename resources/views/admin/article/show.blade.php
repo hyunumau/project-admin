@@ -40,51 +40,29 @@
                         <div class="py-2">
                             <label for="detail"
                                 class="block py-2 font-medium text-sm text-gray-700{{ $errors->has('detail') ? ' text-red-400' : '' }}">{{ __('Detail') }}</label>
-                            <div><?php echo $article->detail; ?></div>
+                            <div>{!! $article->detail !!}</div>
                         </div>
                         <div class="py-2">
                             <label for="image"
                                 class="block font-medium text-sm text-gray-700{{ $errors->has('image') ? ' text-red-400' : '' }}">{{ __('Image') }}</label>
-                            <div class="input-group flex flex-row" id="img2b64">
-                                <div class="output mt-4">
-                                    <img src="{{ old('image', $article->image) }}" style="max-height: 250px">
+                            <div class="input-group flex flex-col" id="img2b64">
+                                <div class="mt-4">
+                                    <img id="img-preview" src="{{ $article->image_url }}"/>
                                 </div>
                             </div>
-                            <div class="py-2">
-                                <h3
-                                    class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
-                                    Categories</h3>
-                                <div class="grid grid-cols-4 gap-4">
-                                    @forelse ($categories as $category)
-                                        <div class="col-span-4 sm:col-span-2 md:col-span-1">
-                                            <label class="form-check-label">
-                                                <input type="checkbox" disabled value="{{ $category->name }}"
-                                                    {{ in_array($category->id, $articleHasCategories) ? 'checked' : '' }}
-                                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                                {{ $category->name }}
-                                            </label>
-                                        </div>
-                                    @empty
-                                        ----
-                                    @endforelse
-                                </div>
-                                <h3
-                                    class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
-                                    Tags</h3>
-                                <div class="grid grid-cols-4 gap-4">
-                                    @forelse ($tags as $tag)
-                                        <div class="col-span-4 sm:col-span-2 md:col-span-1">
-                                            <label class="form-check-label">
-                                                <input type="checkbox" disabled value="{{ $tag->name }}"
-                                                    {{ in_array($tag->id, $articleHasTags) ? 'checked' : '' }}
-                                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                                {{ $tag->name }}
-                                            </label>
-                                        </div>
-                                    @empty
-                                        ----
-                                    @endforelse
-                                </div>
+                        </div>
+                        <div class="py-2">
+                            <h3
+                                class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
+                                Categories</h3>
+                            <div class="grid grid-cols-4 gap-4">
+                                <x-forms.checkbox id="1" name="categories[]" :items="$categories" :selected="$articleHasCategories" />
+                            </div>
+                            <h3
+                                class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
+                                Tags</h3>
+                            <div class="grid grid-cols-4 gap-4">
+                                <x-forms.checkbox id="1" name="tags[]" :items="$tags" :selected="$articleHasTags" />
                             </div>
                         </div>
                     </div>

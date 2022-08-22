@@ -26,11 +26,7 @@
                         @csrf
                         @method('PUT')
                         <div class="py-2">
-                            <label for="name"
-                                class="block font-medium text-sm text-gray-700{{ $errors->has('name') ? ' text-red-400' : '' }}">{{ __('Name') }}</label>
-                            <input id="name"
-                                class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full{{ $errors->has('name') ? ' border-red-400' : '' }}"
-                                type="text" name="name" value="{{ old('name', $tag->name) }}" />
+                            <x-forms.input name="name" required="true" label="{{ __('Name') }}" :value="$tag->name" />
                         </div>
                         <div class="flex justify-end mt-4">
                             <button type='submit'

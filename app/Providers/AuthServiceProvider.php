@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+
+use App\Models\Article;
+use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -32,6 +35,10 @@ class AuthServiceProvider extends ServiceProvider
             if ($user->is_superadmin) {
                 return true;
             }
+        });
+
+        Gate::define('update-article', function (User $user, $article) {
+            return $user->id === $article->author;
         });
         //
     }

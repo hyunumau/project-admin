@@ -9,12 +9,27 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="flex flex-col mt-8">
-
                         <div class="d-print-none with-border mb-8">
                             <a href="{{ route('article.create') }}"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ __('Add Article') }}</a>
                         </div>
-
+                        {{-- <form>
+                            <input type="search" name="search[caption]" placeholder="Caption"
+                                value="{{ old('search[caption]') }}" />
+                        </form> --}}
+                        <div class="flex flex-row">
+                            <div class="basic 1/4 px-4">
+                                <label>Categories</label>
+                            </div>
+                            <div class="basic 3/4 w-full">
+                                <select class="js-example-basic-multiple w-full" name="categories[]"
+                                    multiple="multiple" id="select-filter">
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         <div class="py-2">
                             @if (session()->has('message'))
                                 <div class="mb-8 text-green-400 font-bold">
@@ -22,7 +37,7 @@
                                 </div>
                             @endif
                             <div class="min-w-full border-b border-gray-200 shadow">
-                                <table class="border-collapse table-auto w-full text-sm">
+                                <table class="border-collapse table-auto w-full text-sm" id="table_id">
                                     <thead>
                                         <tr>
                                             <th
@@ -35,11 +50,15 @@
                                             </th>
                                             <th
                                                 class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
-                                                PUBLISH
+                                                AUTHOR
                                             </th>
                                             <th
                                                 class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
-                                                AUTHOR
+                                                CATEGORIES
+                                            </th>
+                                            <th
+                                                class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
+                                                PUBLISH
                                             </th>
                                             <th
                                                 class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left  w-1/4">
@@ -57,13 +76,28 @@
                                                 <td
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                     <div class="text-sm text-gray-900">
-                                                        <a style="color:blue" href="{{ route('article.show', $article->id) }}">{{ $article->id }}</a>
+                                                        <a style="color:blue"
+                                                            href="{{ route('article.show', $article->id) }}">{{ $article->id }}</a>
                                                     </div>
                                                 </td>
                                                 <td
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                     <div class="text-sm text-gray-900">
                                                         {{ $article->caption }}
+                                                    </div>
+                                                </td>
+                                                <td
+                                                    class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                    <div class="text-sm text-gray-900">
+                                                        {{ $article->authorInfo->name }}
+                                                    </div>
+                                                </td>
+                                                <td
+                                                    class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                    <div class="text-sm text-gray-900">
+                                                        @foreach ($article->categories as $key => $category)
+                                                            {{ $key === 0 ? null : ', ' }} {{ $category->name }}
+                                                        @endforeach
                                                     </div>
                                                 </td>
                                                 <td
@@ -78,12 +112,6 @@
                                                             echo '<a href="/article/change/' . $article->id . '" class="attachment-upload px-4 py-2 text-white mr-4 bg-yellow-600">Unpublish</a>';
                                                         }
                                                         ?>
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                                                    <div class="text-sm text-gray-900">
-                                                        {{ $article->authorInfo->name }}
                                                     </div>
                                                 </td>
                                                 <td
@@ -134,13 +162,23 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="py-8">
-                                {{ $articles->appends(request()->query())->links() }}
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <x-slot name="scripts">
+        <script>
+            $(document).ready(function() {
+                $('#table_id').DataTable();
+                $('.js-example-basic-multiple').select2();
+                $('#select-filter').on('change', function() {
+                    console.log($('#select-filter').val());
+                })
+                var members = {!! json_encode($articles->toArray()) !!};
+                console.log(members);
+            });
+        </script>
+    </x-slot>
 </x-app-layout>

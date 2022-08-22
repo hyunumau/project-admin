@@ -28,6 +28,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'roles' => ['nullable'],
         ];
     }
 }

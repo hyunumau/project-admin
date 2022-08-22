@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
-class UpdateArticleRequest extends FormRequest
+class StoreRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +14,7 @@ class UpdateArticleRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return Gate::allows('role create');
     }
 
     /**
@@ -25,11 +25,8 @@ class UpdateArticleRequest extends FormRequest
     public function rules()
     {
         return [
-            'caption' => ['required'],
-            'detail' => ['required'],
-            'image' => ['nullable', 'file', 'max:512'],
-            'categories' => ['nullable'],
-            'tags' => ['nullable'],
+            'name' => 'required|string|max:255|unique:' . config('permission.table_names.roles', 'roles') . ',name',
+            'permissions' => 'nullable',
         ];
     }
 }

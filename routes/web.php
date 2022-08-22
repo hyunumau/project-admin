@@ -43,9 +43,4 @@ Route::group([
     Route::resource('category', 'CategoryController');
     Route::resource('article', 'ArticleController');
 });
-Route::get('/article', [ArticleController::class, 'getAll']);
-Route::get('/article/change/{id}', [ArticleController::class, 'changePublish']);
-Route::get('/article/{id}', [ArticleController::class, 'getById']);
-Route::get('/articletag/{id}', [ArticleController::class, 'getTagArticles']);
-Route::get('/articlecategory/{id}', [ArticleController::class, 'getCategoryArticles']);
-Route::get('/user/{id}', [UserController::class, 'getUserById']);
+

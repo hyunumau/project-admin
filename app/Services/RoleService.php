@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Category;
+use App\Models\Role;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class CategoryService
+class RoleService
 {
-    protected $category;
+    protected $role;
 
-    public function __construct(Category $category)
+    public function __construct(Role $role)
     {
-        $this->category = $category;
+        $this->role = $role;
     }
 
     /**
@@ -23,7 +23,7 @@ class CategoryService
      */
     public function getList(array $filter = [])
     {
-        $query = $this->category->query()->latest();
+        $query = $this->role->query()->latest();
 
         if (Arr::has($filter, 'with')) {
             $query->with(Arr::get($filter, 'with'));
@@ -51,19 +51,15 @@ class CategoryService
         DB::beginTransaction();
 
         try {
-            
-            $category = $this->category->fill($data);
-            
-            $category->save();
-            
-            if(isset($data['tags'])){
-                $category->tags()->sync($data['tags']);
+
+            $role = $this->role->fill($data);
+            $role->save();
+            if (!empty($data['permissions'])) {
+                $role->givePermissionTo($data['permissions']);
             }
-            
-            
             DB::commit();
 
-            return $category;
+            return $role;
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -73,22 +69,19 @@ class CategoryService
         }
     }
 
-    public function update($data, $category)
+    public function update($data, $role)
     {
 
         DB::beginTransaction();
 
         try {
-            $category->name = $data['name'];
-            $category->fill($data)->save();
-            
-            if(isset($data['tags'])){
-                $category->tags()->sync($data['tags']);
-            }
-            
+            $role->update($data);
+            $permissions = $data['permissions'] ?? [];
+            $role->syncPermissions($permissions);
+
             DB::commit();
 
-            return $category;
+            return $role;
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -96,12 +89,5 @@ class CategoryService
 
             return null;
         }
-    }
-
-    public function delete($category)
-    {
-        $category->tags()->detach();
-        $category->articles()->detach();
-        $category->delete();
     }
 }

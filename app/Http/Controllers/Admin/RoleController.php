@@ -3,30 +3,37 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Role;
 use App\Models\Permission;
-use Illuminate\Http\Request;
+use App\Services\RoleService;
 
 class RoleController extends Controller
 {
+
+    protected $roleService;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
+    function __construct(RoleService $roleService)
     {
         $this->middleware('can:role list', ['only' => ['index', 'show']]);
         $this->middleware('can:role create', ['only' => ['create', 'store']]);
         $this->middleware('can:role edit', ['only' => ['edit', 'update']]);
         $this->middleware('can:role delete', ['only' => ['destroy']]);
+
+        $this->roleService = $roleService;
     }
 
     public function index()
     {
         $roles = new Role;
-        $roles = $roles->latest()->paginate(5);
-        return view('admin.role.index', compact('roles'))->with('i', (request()->input('page', 1) - 1) * 5);
+        $roles = $roles->all();
+        return view('admin.role.index', compact('roles'));
     }
     /**
      * Show the form for creating a new resource.
@@ -45,15 +52,10 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreRoleRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:' . config('permission.table_names.roles', 'roles') . ',name',
-        ]);
-        $role = Role::create($request->all());
-        if (!empty($request->permissions)) {
-            $role->givePermissionTo($request->permissions);
-        }
+        $this->roleService->create($request->validated());
+        
         return redirect()->route('role.index')
             ->with('message', 'Tạo thành công');
     }
@@ -90,14 +92,10 @@ class RoleController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Role $role)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:' . config('permission.table_names.roles', 'roles') . ',name,' . $role->id,
-        ]);
-        $role->update($request->all());
-        $permissions = $request->permissions ?? [];
-        $role->syncPermissions($permissions);
+    public function update(UpdateRoleRequest $request, Role $role)
+    {   
+        $this->roleService->update($request->validated(), $role);
+        
         return redirect()->route('role.index')
             ->with('message', 'Cập nhật thành công');
     }

@@ -22,9 +22,8 @@ class PermissionController extends Controller
     }
     public function index()
     {
-        $permissions = Permission::latest()->paginate(5);
-        return view('admin.permission.index', compact('permissions'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        $permissions = Permission::all();
+        return view('admin.permission.index', compact('permissions'));
     }
 
     /**
@@ -45,12 +44,7 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:' . config('permission.table_names.permissions', 'permissions') . ',name',
-        ]);
-        Permission::create($request->all());
-        return redirect()->route('permission.index')
-            ->with('message', 'Tạo thành công');
+        
     }
 
     /**
@@ -84,12 +78,7 @@ class PermissionController extends Controller
      */
     public function update(Request $request, Permission $permission)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:' . config('permission.table_names.permissions', 'permissions') . ',name,' . $permission->id,
-        ]);
-        $permission->update($request->all());
-        return redirect()->route('permission.index')
-            ->with('message', 'Cập nhật thành công');
+        
     }
 
     /**
@@ -100,8 +89,6 @@ class PermissionController extends Controller
      */
     public function destroy(Permission $permission)
     {
-        $permission->delete();
-        return redirect()->route('permission.index')
-            ->with('message', 'Xoá thành công');
+       
     }
 }

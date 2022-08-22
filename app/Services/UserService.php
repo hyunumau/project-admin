@@ -47,11 +47,11 @@ class UserService
 
     public function create($data)
     {
+        
         $user = $this->user->fill($data);
         $user->password = Hash::make($data['password']);
 
         $user->save();
-
 
         if (isset($data['roles'])) {
             $user->assignRole($data['roles']);
@@ -70,7 +70,7 @@ class UserService
                 'password' => Hash::make($data['password']),
             ]);
         }
-        $roles = $data->roles ?? [];
+        $roles = $data['roles'] ?? [];
         $user->syncRoles($roles);
     }
 

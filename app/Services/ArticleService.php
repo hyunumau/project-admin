@@ -63,8 +63,14 @@ class ArticleService
 
             $article->save();
 
-            $article->categories()->sync($data['categories']);
-            $article->tags()->sync($data['tags']);
+            if (isset($data['categories'])) {
+                $article->categories()->sync($data['categories']);
+            }
+            if (isset($data['tags'])) {
+                $article->tags()->sync($data['tags']);
+            }
+
+
 
             DB::commit();
 
@@ -77,6 +83,7 @@ class ArticleService
             return null;
         }
     }
+
 
     /**
      * @param   \Illuminate\Http\UploadedFile  $file
@@ -101,11 +108,16 @@ class ArticleService
             if (empty($fileName)) {
                 $data['image'] = $article->image;
             } else {
+                unlink(public_path($article->image_url));
                 $data['image'] = $fileName;
-                Storage::delete(['1660812580-google.png']);
             }
-            $article->categories()->sync($data['categories']);
-            $article->tags()->sync($data['tags']);
+            
+            if (isset($data['categories'])) {
+                $article->categories()->sync($data['categories']);
+            }
+            if (isset($data['tags'])) {
+                $article->tags()->sync($data['tags']);
+            }
             $article->fill($data)->save();
 
             DB::commit();

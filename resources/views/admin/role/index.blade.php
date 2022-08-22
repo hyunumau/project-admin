@@ -22,7 +22,7 @@
                                 </div>
                             @endif
                             <div class="min-w-full border-b border-gray-200 shadow">
-                                <table class="border-collapse table-auto w-full text-sm">
+                                <table class="border-collapse table-auto w-full text-sm" id="table_id">
                                     <thead>
                                         <tr>
                                             <th
@@ -76,13 +76,17 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="py-8">
-                                {{ $roles->appends(request()->query())->links() }}
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <x-slot name="scripts">
+        <script>
+            $(document).ready(function() {
+                $('#table_id').DataTable();
+            });
+        </script>
+    </x-slot>
 </x-app-layout>
