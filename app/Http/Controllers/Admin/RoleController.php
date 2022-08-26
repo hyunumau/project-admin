@@ -33,6 +33,7 @@ class RoleController extends Controller
     {
         $roles = new Role;
         $roles = $roles->all();
+        
         return view('admin.role.index', compact('roles'));
     }
     /**
@@ -43,6 +44,7 @@ class RoleController extends Controller
     public function create()
     {
         $permissions = Permission::all();
+
         return view('admin.role.create', compact('permissions'));
     }
 
@@ -70,6 +72,7 @@ class RoleController extends Controller
     {
         $permissions = Permission::all();
         $roleHasPermissions = array_column(json_decode($role->permissions, true), 'id');
+
         return view('admin.role.show', compact('role', 'permissions', 'roleHasPermissions'));
     }
     /**
@@ -82,6 +85,7 @@ class RoleController extends Controller
     {
         $permissions = Permission::all();
         $roleHasPermissions = array_column(json_decode($role->permissions, true), 'id');
+        
         return view('admin.role.edit', compact('role', 'permissions', 'roleHasPermissions'));
     }
 
@@ -109,6 +113,7 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         $role->delete();
+
         return redirect()->route('role.index')
             ->with('message', 'Xoá thành công');
     }

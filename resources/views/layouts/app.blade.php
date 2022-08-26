@@ -19,7 +19,8 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/35.0.1/classic/ckeditor.js"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>  
+    <script src="https://cdn.datatables.net/plug-ins/1.12.1/pagination/input.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -28,12 +29,20 @@
         }
 
         .dataTables_wrapper .dataTables_length select {
-            border: 1px solid #aaa;
-            border-radius: 3px;
             padding-right: 30px;
             padding-left: 10px;
-            background-color: transparent;
             margin: 5px;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_processing,
+        .dataTables_wrapper .dataTables_paginate {
+            padding: 10px;
+        }
+        .paginate_input{
+            width: 35px;
         }
     </style>
 </head>

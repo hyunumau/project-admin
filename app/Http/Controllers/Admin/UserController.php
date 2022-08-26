@@ -8,6 +8,8 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Models\Role;
 use App\Services\UserService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -28,9 +30,23 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $filter = [];
+        if (Gate::allows('user read')) {
+            $filter = [
+                ...$request->query(),
+                'paginate' => 10
+            ];
+        } else {
+            $filter = [
+                ...$request->query(),
+                'filter' => [
+                    ...$request->query('filter', []),
+                ],
+                'paginate' => 10
+            ];
+        }
+
         $users = $this->userService->getList($filter);
 
         return view('admin.user.index', compact('users'));
@@ -43,6 +59,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
+
         return view('admin.user.create', compact('roles'));
     }
 
@@ -71,6 +88,7 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $userRoles = array_column(json_decode($user->roles, true), 'id');
+
         return view('admin.user.show', compact('user', 'roles', 'userRoles'));
     }
 
@@ -84,6 +102,7 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $userHasRoles = array_column(json_decode($user->roles, true), 'id');
+
         return view('admin.user.edit', compact('user', 'roles', 'userHasRoles'));
     }
 
@@ -113,6 +132,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+
         return redirect()->route('user.index')
             ->with('message', 'User deleted successfully');
     }
@@ -122,6 +142,7 @@ class UserController extends Controller
         $user = auth()->user();
         $roles = Role::all();
         $userRoles = array_column(json_decode($user->roles, true), 'id');
+        
         return view('dashboard', compact('user', 'roles', 'userRoles'));
     }
 }

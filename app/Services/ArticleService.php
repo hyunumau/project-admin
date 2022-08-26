@@ -3,13 +3,10 @@
 namespace App\Services;
 
 use App\Models\Article;
-use App\Models\Category;
-use App\Models\Tag;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ArticleService
 {
@@ -27,27 +24,26 @@ class ArticleService
      */
     public function getList(array $filter = [])
     {
-        $query = $this->article->query()->latest();
+        // $query = $this->article->query()->latest();
 
-        if (Arr::has($filter, 'with')) {
-            $query->with(Arr::get($filter, 'with'));
-        }
+        // if (Arr::has($filter, 'with')) {
+        //     $query->with(Arr::get($filter, 'with'));
+        // }
 
-        if (Arr::has($filter, 'filter')) {
-            $query->where(Arr::get($filter, 'filter'));
-        }
+        // return $query
+        //     ->filter($filter)
+        //     ->searchAll($filter, ['id', 'caption'])
+        //     ->searchCategories(Arr::get($filter, 'categories', []))
+        //     ->getWithPaginate($filter);
 
-        if (Arr::has($filter, 'search')) {
-            foreach (Arr::get($filter, 'search') as $column => $value) {
-                $query->where($column, 'like', "%{$value}%");
-            }
-        }
+        $articleTable = $this->article->getTable();
 
-        if (Arr::has($filter, 'paginate')) {
-            return $query->paginate(Arr::get($filter, 'paginate'));
-        }
+        $query = $this->article->join('users as u', 'u.id', '=', "{$articleTable}.author")
+            ->select("{$articleTable}.*", 'u.name as authorInfo_name')
+            ->searchAll($filter, [ "{$articleTable}.id", 'caption', 'u.name'])
+            ->getWithPaginate($filter);
 
-        return $query->get();
+        return $query;
     }
 
     public function create($data)
@@ -105,19 +101,22 @@ class ArticleService
         DB::beginTransaction();
         try {
             $fileName = $this->handleFileUpload(Arr::get($data, 'image'));
+
             if (empty($fileName)) {
                 $data['image'] = $article->image;
             } else {
                 unlink(public_path($article->image_url));
                 $data['image'] = $fileName;
             }
-            
+
             if (isset($data['categories'])) {
                 $article->categories()->sync($data['categories']);
             }
+
             if (isset($data['tags'])) {
                 $article->tags()->sync($data['tags']);
             }
+
             $article->fill($data)->save();
 
             DB::commit();
@@ -134,8 +133,6 @@ class ArticleService
 
     public function delete($article)
     {
-        $article->tags()->detach();
-        $article->categories()->detach();
         $article->delete();
     }
 }

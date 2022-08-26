@@ -7,7 +7,6 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Services\CategoryService;
-use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -41,6 +40,7 @@ class CategoryController extends Controller
     {
         $categories = Category::all();
         $tags = Tag::all();
+
         return view('admin.category.create', compact("tags"));
     }
 
@@ -83,6 +83,7 @@ class CategoryController extends Controller
     {
         $tags = Tag::all();
         $categoryHasTags = array_column(json_decode($category->tags, true), 'id');
+        
         return view('admin.category.edit', compact('category', 'tags', 'categoryHasTags'));
     }
 

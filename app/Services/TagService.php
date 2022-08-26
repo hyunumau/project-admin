@@ -66,8 +66,6 @@ class TagService
 
     public function delete($tag)
     {
-        $tag->categories()->detach();
-        $tag->articles()->detach();
         $tag->delete();
     }
 }

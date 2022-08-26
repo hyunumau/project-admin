@@ -89,6 +89,7 @@ class CategoryService
             DB::commit();
 
             return $category;
+            
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -100,8 +101,6 @@ class CategoryService
 
     public function delete($category)
     {
-        $category->tags()->detach();
-        $category->articles()->detach();
         $category->delete();
     }
 }

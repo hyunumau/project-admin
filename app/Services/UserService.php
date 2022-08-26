@@ -23,26 +23,12 @@ class UserService
     public function getList(array $filter = [])
     {
         $query = $this->user->query()->latest();
-        
+
         if (Arr::has($filter, 'with')) {
             $query->with(Arr::get($filter, 'with'));
         }
 
-        if (Arr::has($filter, 'filter')) {
-            $query->where(Arr::get($filter, 'filter'));
-        }
-
-        if (Arr::has($filter, 'search')) {
-            foreach (Arr::get($filter, 'search') as $column => $value) {
-                $query->where($column, 'like', "%{$value}%");
-            }
-        }
-
-        if (Arr::has($filter, 'paginate')) {
-            return $query->paginate(Arr::get($filter, 'paginate'));
-        }
-
-        return $query->get();
+        return $query->filter($filter)->searchAll($filter, ['name','email'])->getWithPaginate($filter);
     }
 
     public function create($data)
@@ -65,11 +51,13 @@ class UserService
         $user->update([
             'name' => $data['name'],
         ]);
+        
         if ($data['password']) {
             $user->update([
                 'password' => Hash::make($data['password']),
             ]);
         }
+
         $roles = $data['roles'] ?? [];
         $user->syncRoles($roles);
     }

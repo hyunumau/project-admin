@@ -7,7 +7,6 @@ use App\Models\Article;
 use App\Services\ArticleService;
 use Illuminate\Http\Request;
 
-
 class ArticleController extends Controller
 {
 
@@ -18,9 +17,10 @@ class ArticleController extends Controller
         $this->articleService = $articleService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         return $this->articleService->getList([
+            ...$request->query(),
             'with' => ['authorInfo', 'tags:id,name', 'categories:id,name'],
             'filter' => ['publish' => 1],
         ])->toArray();

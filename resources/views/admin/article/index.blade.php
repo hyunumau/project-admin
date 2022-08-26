@@ -13,23 +13,30 @@
                             <a href="{{ route('article.create') }}"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ __('Add Article') }}</a>
                         </div>
-                        {{-- <form>
-                            <input type="search" name="search[caption]" placeholder="Caption"
-                                value="{{ old('search[caption]') }}" />
-                        </form> --}}
-                        <div class="flex flex-row">
-                            <div class="basic 1/4 px-4">
-                                <label>Categories</label>
+                        <form>
+                            <div class="flex flex-row">
+                                {{-- <div class="basic 1/4 px-4 mt-1">
+                                    <label>Categories</label>
+                                </div>
+                                <div class="basic 2/4 w-full">
+                                    <select class="js-example-basic-multiple w-full" name="categories[]"
+                                        multiple="multiple" id="select-filter" >
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div> --}}
+                                <div class="basic 2/4">
+                                    <input type="search" name="search" placeholder="Caption, ID and Author" 
+                                    value="{{ request('search') }}" />
+                                </div>
+                                {{-- <div class="basic 1/4 px-4">
+                                    <button type="submit" class="px-4 mb-1 py-1 text-white bg-green-500 rounded">
+                                        Filter
+                                    </button>
+                                </div> --}}
                             </div>
-                            <div class="basic 3/4 w-full">
-                                <select class="js-example-basic-multiple w-full" name="categories[]"
-                                    multiple="multiple" id="select-filter">
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                        </form>
                         <div class="py-2">
                             @if (session()->has('message'))
                                 <div class="mb-8 text-green-400 font-bold">
@@ -103,15 +110,13 @@
                                                 <td
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                     <div class="text-sm text-gray-900">
-                                                        <?php
-                                                        if ($article->publish) {
-                                                            # code...
-                                                            echo '<a href="/article/change/' . $article->id . '" class="attachment-upload px-4 py-2 text-white mr-4 bg-green-600">Publish</a>';
-                                                        } else {
-                                                            # code...
-                                                            echo '<a href="/article/change/' . $article->id . '" class="attachment-upload px-4 py-2 text-white mr-4 bg-yellow-600">Unpublish</a>';
-                                                        }
-                                                        ?>
+                                                        @if ($article->publish)
+                                                            <a href="{{ route('article.change-publish', $article->id) }}"
+                                                                class="attachment-upload px-4 py-2 text-white mr-4 bg-green-600">Publish</a>
+                                                        @else
+                                                            <a href="{{ route('article.change-publish', $article->id) }}"
+                                                                class="attachment-upload px-4 py-2 text-white mr-4 bg-yellow-600">Unpublish</a>
+                                                        @endif
                                                     </div>
                                                 </td>
                                                 <td
@@ -138,9 +143,9 @@
                                                         </form>
                                                     </td>
                                                 @else
-                                                    @if ($article->author == $authoredit->id)
-                                                        <td
-                                                            class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                    <td
+                                                        class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                        @if ($article->author == $authoredit->id)
                                                             <form action="{{ route('article.destroy', $article->id) }}"
                                                                 method="POST">
                                                                 <a href="{{ route('article.edit', $article->id) }}"
@@ -154,13 +159,16 @@
                                                                     {{ __('Delete') }}
                                                                 </button>
                                                             </form>
-                                                        </td>
-                                                    @endif
+                                                        @endif
+                                                    </td>
                                                 @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="py-8">
+                                {{ $articles->appends(request()->query())->links() }}
                             </div>
                         </div>
                     </div>
@@ -171,13 +179,14 @@
     <x-slot name="scripts">
         <script>
             $(document).ready(function() {
-                $('#table_id').DataTable();
+                $('#table_id').DataTable({
+                    "pagingType": "input",
+                    paging: false,
+                    info: false,
+                    "searching": false
+                });
+
                 $('.js-example-basic-multiple').select2();
-                $('#select-filter').on('change', function() {
-                    console.log($('#select-filter').val());
-                })
-                var members = {!! json_encode($articles->toArray()) !!};
-                console.log(members);
             });
         </script>
     </x-slot>

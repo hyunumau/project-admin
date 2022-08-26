@@ -15,12 +15,15 @@
                                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ __('Add User') }}</a>
                             </div>
                         @endcan
-                        <div class="py-2">
-                            @if (session()->has('message'))
-                                <div class="mb-8 text-green-400 font-bold">
-                                    {{ session()->get('message') }}
+                        <form>
+                            <div class="flex flex-row">
+                                <div class="basic 4/4">
+                                    <input type="search" name="search" placeholder="Name and Email" 
+                                    value="{{ request('search') }}" />
                                 </div>
-                            @endif
+                            </div>
+                        </form>
+                        <div class="py-2">
                             <div class="min-w-full border-b border-gray-200 shadow">
                                 <table class="border-collapse table-auto w-full text-sm" id="table_id">
                                     <thead>

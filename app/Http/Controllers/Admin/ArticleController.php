@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Tag;
 use App\Services\ArticleService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ArticleController extends Controller
 {
@@ -27,17 +28,39 @@ class ArticleController extends Controller
     }
 
     public function index(Request $request)
-    {   
-        $article = Article::query();
-        
-        $filter = [];
-        //     'search' => $request->query()['search'] ?? [],
-        // ];
-        
+    {
+        //dd(Arr::get($request->query(),'categories'));
+        $categoryIds = $request->query('categories', []);
+        $with = [
+            'categories' => function ($builder) use ($categoryIds) {
+                if (! empty($categoryIds)) {
+                    $builder->whereIn('id', $categoryIds);
+                }
+            }
+        ];
+
+        if (Gate::allows('articles publish')) {
+            $filter = [
+                ...$request->query(),
+                'paginate' => 10,
+                'with' => $with,
+            ];
+        } else {
+            $filter = [
+                ...$request->query(),
+                'filter' => [
+                    ...$request->query('filter', []),
+                    'author' => auth()->id(),
+                ],
+                'paginate' => 10,
+                'with' => $with,
+            ];
+        }
+
         $articles = $this->articleService->getList($filter);
         $categories = Category::all();
-
         $authoredit = auth()->user();
+
         return view('admin.article.index', compact('articles', 'authoredit', 'categories'));
     }
 
@@ -121,7 +144,7 @@ class ArticleController extends Controller
         $this->authorize('update-article', $article);
 
         $this->articleService->update($request->validated(), $article);
-        
+
         return redirect()->route('article.index')
             ->with('message', 'Cập nhật thành công');
     }
@@ -141,9 +164,32 @@ class ArticleController extends Controller
 
     public function changePublish($id)
     {
+        $this->authorize('articles publish');
         $article = Article::find($id);
         $article->publish = !($article->publish);
         $article->save();
+        
         return redirect()->route('article.index');
+    }
+
+    public function getList(Request $request)
+    {
+        if (Gate::allows('articles publish')) {
+            $filter = $request->query();
+        } else {
+            $filter = [
+                ...$request->query(),
+                'filter' => [
+                    ...$request->query('filter', []),
+                    'author' => auth()->id(),
+                ],
+            ];
+        }
+
+        $articles = $this->articleService->getList($filter);
+
+        return response()->json([
+            'data' => $articles->toArray(),
+        ]);
     }
 }

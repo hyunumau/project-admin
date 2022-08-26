@@ -41,6 +41,8 @@ Route::group([
     Route::resource('user', 'UserController');
     Route::resource('tag', 'TagController');
     Route::resource('category', 'CategoryController');
+    Route::get('article/get-list', [ArticleController::class, 'getList'])->name('article.get-list');
+    Route::get('article/change/{id}', [ArticleController::class, 'changePublish'])->name('article.change-publish');
     Route::resource('article', 'ArticleController');
 });
 
