@@ -24,26 +24,20 @@ class ArticleService
      */
     public function getList(array $filter = [])
     {
-        // $query = $this->article->query()->latest();
-
-        // if (Arr::has($filter, 'with')) {
-        //     $query->with(Arr::get($filter, 'with'));
-        // }
-
-        // return $query
-        //     ->filter($filter)
-        //     ->searchAll($filter, ['id', 'caption'])
-        //     ->searchCategories(Arr::get($filter, 'categories', []))
-        //     ->getWithPaginate($filter);
-
         $articleTable = $this->article->getTable();
 
         $query = $this->article->join('users as u', 'u.id', '=', "{$articleTable}.author")
-            ->select("{$articleTable}.*", 'u.name as authorInfo_name')
+            ->select("{$articleTable}.*", 'u.name as authorInfo_name');
+
+        if ($categories = Arr::get($filter, 'categories')) {
+            $query->whereHas('categories', function ($query) use ($categories) {
+                $query->whereIn('id', $categories);
+            });
+        }
+
+        return $query->filter($filter)
             ->searchAll($filter, [ "{$articleTable}.id", 'caption', 'u.name'])
             ->getWithPaginate($filter);
-
-        return $query;
     }
 
     public function create($data)

@@ -15,26 +15,35 @@
                         </div>
                         <form>
                             <div class="flex flex-row">
-                                {{-- <div class="basic 1/4 px-4 mt-1">
+                                <div class="basic 3/12 px-2 pt-3">
                                     <label>Categories</label>
                                 </div>
-                                <div class="basic 2/4 w-full">
+                                <div class="basic 3/12 w-full mt-2">
                                     <select class="js-example-basic-multiple w-full" name="categories[]"
                                         multiple="multiple" id="select-filter" >
                                         @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            <option
+                                                value="{{ $category->id }}"
+                                                @if (in_array($category->id, request('categories', []))) selected @endif
+                                            >
+                                                {{ $category->name }}
+                                            </option>
                                         @endforeach
                                     </select>
-                                </div> --}}
-                                <div class="basic 2/4">
-                                    <input type="search" name="search" placeholder="Caption, ID and Author" 
-                                    value="{{ request('search') }}" />
                                 </div>
-                                {{-- <div class="basic 1/4 px-4">
+                                <div class="basic 3/12 px-4">
+                                    <x-forms.input 
+                                    type="search" 
+                                    name="search" 
+                                    placeholder="Caption, ID and Author" 
+                                    value="{{ request('search') }}"
+                                    />
+                                </div>
+                                <div class="basic 3/12 px-4 mt-2">
                                     <button type="submit" class="px-4 mb-1 py-1 text-white bg-green-500 rounded">
                                         Filter
                                     </button>
-                                </div> --}}
+                                </div>
                             </div>
                         </form>
                         <div class="py-2">
@@ -168,7 +177,7 @@
                                 </table>
                             </div>
                             <div class="py-8">
-                                {{ $articles->appends(request()->query())->links() }}
+                                {{ $articles->links() }}
                             </div>
                         </div>
                     </div>

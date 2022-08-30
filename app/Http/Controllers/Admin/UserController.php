@@ -35,6 +35,9 @@ class UserController extends Controller
         if (Gate::allows('user read')) {
             $filter = [
                 ...$request->query(),
+                'filter' => [
+                    'is_superadmin' => 0
+                ],
                 'paginate' => 10
             ];
         } else {
@@ -42,6 +45,7 @@ class UserController extends Controller
                 ...$request->query(),
                 'filter' => [
                     ...$request->query('filter', []),
+                    'is_superadmin' => 0
                 ],
                 'paginate' => 10
             ];

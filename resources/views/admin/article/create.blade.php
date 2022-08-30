@@ -88,4 +88,5 @@
             })
         </script>
     </x-slot>
+    
 </x-app-layout>

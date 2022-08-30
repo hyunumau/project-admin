@@ -45,4 +45,3 @@ Route::group([
     Route::get('article/change/{id}', [ArticleController::class, 'changePublish'])->name('article.change-publish');
     Route::resource('article', 'ArticleController');
 });
-

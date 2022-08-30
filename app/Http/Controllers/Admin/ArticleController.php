@@ -29,14 +29,9 @@ class ArticleController extends Controller
 
     public function index(Request $request)
     {
-        //dd(Arr::get($request->query(),'categories'));
         $categoryIds = $request->query('categories', []);
         $with = [
-            'categories' => function ($builder) use ($categoryIds) {
-                if (! empty($categoryIds)) {
-                    $builder->whereIn('id', $categoryIds);
-                }
-            }
+            'categories'
         ];
 
         if (Gate::allows('articles publish')) {
