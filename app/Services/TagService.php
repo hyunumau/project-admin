@@ -2,10 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 
 class TagService
 {

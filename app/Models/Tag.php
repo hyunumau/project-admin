@@ -13,6 +13,7 @@ class Tag extends Model
     protected $fillable = [
         'name',
     ];
+    
     public function articles()
     {
         return $this->morphedByMany(Article::class, 'tag_connect');

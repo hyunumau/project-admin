@@ -7,17 +7,6 @@ use Illuminate\Support\Arr;
 
 trait HasSearch
 {
-    // public function scopeSearchAll(Builder $query, array $filter = [], $columns)
-    // {
-    //     if (Arr::has($filter, 'search')) {
-    //         $value = Arr::get($filter, 'search');
-    //         foreach ($columns as $column) {
-    //             $query->orWhere($column, 'LIKE', "%{$value}%");
-    //         }
-    //     }
-
-    //     return $query;
-    // }
     public function scopeSearchAll(Builder $query, $filter, array $columns)
     {
         if (Arr::has($filter, 'search')) {

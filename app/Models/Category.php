@@ -13,10 +13,12 @@ class Category extends Model
     protected $fillable = [
         'name',
     ];
+    
     public function articles()
     {
         return $this->morphedByMany(Article::class, 'cate_connect');
     }
+
     public function tags()
     {
         return $this->morphToMany(Tag::class, 'tag_connect');

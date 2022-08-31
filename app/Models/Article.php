@@ -28,6 +28,7 @@ class Article extends Model
         if (preg_match('/^http(s)*\:\/\/[a-zA-Z0-9\-_\.]+\//i', $value)) {
             return $value;
         }
+        
         return Storage::url($value);
     }
 
