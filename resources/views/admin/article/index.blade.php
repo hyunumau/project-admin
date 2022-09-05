@@ -18,7 +18,7 @@
                                 <div class="basic 3/12 px-2 pt-3">
                                     <label>Categories</label>
                                 </div>
-                                <div class="basic 3/12 w-full mt-2">
+                                <div class="basic 1/12 w-1/2 mt-2">
                                     <select class="js-example-basic-multiple w-full" name="categories[]"
                                         multiple="multiple" id="select-filter" >
                                         @foreach ($categories as $category)
@@ -31,7 +31,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="basic 3/12 px-4">
+                                <div class="basic 5/12 px-4 w-3/12">
                                     <x-forms.input 
                                     type="search" 
                                     name="search" 
