@@ -35,6 +35,7 @@ class ArticleController extends Controller
         ];
 
         if (Gate::allows('articles publish')) {
+            dd(Gate::allows('articles publish'));
             $filter = [
                 ...$request->query(),
                 'paginate' => 10,
