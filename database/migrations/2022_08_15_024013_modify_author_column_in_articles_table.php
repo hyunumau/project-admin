@@ -16,7 +16,7 @@ return new class extends Migration
     {
         DB::table('articles')->update(['author' => 1]);
         Schema::table('articles', function (Blueprint $table) {
-            $table->bigInt('author')->change();
+            $table->bigint('author')->change();
         });
     }
 
