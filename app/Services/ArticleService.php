@@ -37,7 +37,7 @@ class ArticleService
         }
 
         return $query->filter($filter)
-            ->searchAll($filter, [ "{$articleTable}.id", 'caption', 'u.name'])
+            ->searchAll($filter, ["{$articleTable}.id", 'caption', 'u.name'])
             ->getWithPaginate($filter);
     }
 
@@ -84,7 +84,7 @@ class ArticleService
         if (is_null($file)) {
             return null;
         }
-        $path = Storage::disk('s3')->put('images', $file, 'public');
+        $path = Storage::disk('s3')->put('images-article', $file, 'public');
         // $fileName = time() . "-" . $file->getClientOriginalName();
         // $file->storeAs('public', $fileName);
 
@@ -100,7 +100,8 @@ class ArticleService
             if (empty($fileName)) {
                 $data['image'] = $article->image;
             } else {
-                unlink(public_path($article->image_url));
+                Storage::disk('s3')->delete($article->image);
+                $fileName = $this->handleFileUpload(Arr::get($data, 'image'));
                 $data['image'] = $fileName;
             }
 
