@@ -51,7 +51,7 @@
                                                 <td
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                     @canany(['role edit', 'role delete'])
-                                                        @if ($role->id !== 1)
+                                                        @if ($role->id !== 0)
                                                             <form action="{{ route('role.destroy', $role->id) }}"
                                                                 method="POST">
                                                                 @can('role edit')

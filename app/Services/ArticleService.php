@@ -84,10 +84,9 @@ class ArticleService
         if (is_null($file)) {
             return null;
         }
-        $path = Storage::disk('s3')->put('images-article', $file, 'public');
-        // $fileName = time() . "-" . $file->getClientOriginalName();
-        // $file->storeAs('public', $fileName);
 
+        $path = Storage::disk('s3')->put('images-article', $file, 'public');
+        
         return $path;
     }
 
