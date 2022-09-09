@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleService
 {
@@ -83,11 +84,11 @@ class ArticleService
         if (is_null($file)) {
             return null;
         }
+        $path = Storage::disk('s3')->put('images', $file, 'public');
+        // $fileName = time() . "-" . $file->getClientOriginalName();
+        // $file->storeAs('public', $fileName);
 
-        $fileName = time() . "-" . $file->getClientOriginalName();
-        $file->storeAs('public', $fileName);
-
-        return $fileName;
+        return $path;
     }
 
     public function update($data, $article)
