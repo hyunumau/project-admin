@@ -20,16 +20,46 @@ class PermissionSeeder extends Seeder
         // Reset cached roles and permissions
 
         Permission::insert([
-            ['name' => 'permission read'],
-            ['name' => 'role read'],
-            ['name' => 'role create'],
-            ['name' => 'role edit'],
-            ['name' => 'role delete'],
-            ['name' => 'user read'],
-            ['name' => 'user create'],
-            ['name' => 'user edit'],
-            ['name' => 'user delete'],
-            ['name' => 'articles publish'],
+            [
+                'name' => 'permission read',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'role read',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'role create',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'role edit',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'role delete',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'user read',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'user create',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'user edit',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'user delete',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'articles publish',
+                'guard_name' => 'web'
+            ],
         ]);
     }
 }
