@@ -51,25 +51,23 @@
                                                 <td
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                     @canany(['role edit', 'role delete'])
-                                                        @if ($role->id !== 0)
-                                                            <form action="{{ route('role.destroy', $role->id) }}"
-                                                                method="POST">
-                                                                @can('role edit')
-                                                                    <a href="{{ route('role.edit', $role->id) }}"
-                                                                        class="px-4 py-2 text-white mr-4 bg-blue-600">
-                                                                        {{ __('Edit') }}
-                                                                    </a>
-                                                                @endcan
-                                                                @can('role delete')
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button class="px-4 py-2 text-white bg-red-600"
-                                                                        onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
-                                                                        {{ __('Delete') }}
-                                                                    </button>
-                                                                @endcan
-                                                            </form>
-                                                        @endif
+                                                        <form action="{{ route('role.destroy', $role->id) }}"
+                                                            method="POST">
+                                                            @can('role edit')
+                                                                <a href="{{ route('role.edit', $role->id) }}"
+                                                                    class="px-4 py-2 text-white mr-4 bg-blue-600">
+                                                                    {{ __('Edit') }}
+                                                                </a>
+                                                            @endcan
+                                                            @can('role delete')
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button class="px-4 py-2 text-white bg-red-600"
+                                                                    onclick="return confirm('{{ __('Xác nhận xoá?') }}')">
+                                                                    {{ __('Delete') }}
+                                                                </button>
+                                                            @endcan
+                                                        </form>
                                                     @endcanany
                                                 </td>
 

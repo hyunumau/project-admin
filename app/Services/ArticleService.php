@@ -86,7 +86,7 @@ class ArticleService
         }
 
         $path = Storage::disk('s3')->put('images-article', $file, 'public');
-        
+
         return $path;
     }
 
@@ -94,14 +94,11 @@ class ArticleService
     {
         DB::beginTransaction();
         try {
-            $fileName = $this->handleFileUpload(Arr::get($data, 'image'));
-
-            if (empty($fileName)) {
+            if ($data['image'] == null) {
                 $data['image'] = $article->image;
             } else {
                 Storage::disk('s3')->delete($article->image);
-                $fileName = $this->handleFileUpload(Arr::get($data, 'image'));
-                $data['image'] = $fileName;
+                $data['image'] = $this->handleFileUpload(Arr::get($data, 'image'));
             }
 
             if (isset($data['categories'])) {
