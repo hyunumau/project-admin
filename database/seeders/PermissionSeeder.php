@@ -18,7 +18,6 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         // Reset cached roles and permissions
-
         $permissions = [
             'permission list',
             'permission create',
@@ -32,7 +31,9 @@ class PermissionSeeder extends Seeder
             'user create',
             'user edit',
             'user delete',
+            'articles publish',
         ];
+        
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
