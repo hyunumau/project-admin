@@ -36,8 +36,7 @@ class ArticleController extends Controller
         ];
         $id = auth()->id();
         $has = User::find($id)->hasPermission('articles publish');
-        dd($has);
-        if (Gate::allows('articles publish')) {
+        if ($has || auth()->user()->is_superadmin) {
             $filter = [
                 ...$request->query(),
                 'paginate' => 10,
