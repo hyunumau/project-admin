@@ -119,12 +119,12 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        $this->authorize('update-article', $article);
-
-        $categories = Category::all();
-        $tags = Tag::all();
-        $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
-        $articleHasTags = array_column(json_decode($article->tags, true), 'id');
+        if (auth()->id === $article->author) {
+            $categories = Category::all();
+            $tags = Tag::all();
+            $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
+            $articleHasTags = array_column(json_decode($article->tags, true), 'id');
+        }
 
         return view('admin.article.edit', compact('article', 'categories', 'articleHasCategories', 'tags', 'articleHasTags'));
     }
@@ -138,9 +138,9 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, Article $article)
     {
-        $this->authorize('update-article', $article);
-
-        $this->articleService->update($request->validated(), $article);
+        if (auth()->id === $article->author) {
+            $this->articleService->update($request->validated(), $article);
+        }
 
         return redirect()->route('article.index')
             ->with('message', 'Cập nhật thành công');
@@ -161,11 +161,13 @@ class ArticleController extends Controller
 
     public function changePublish($id)
     {
-        $this->authorize('articles publish');
-        $article = Article::find($id);
-        $article->publish = !($article->publish);
-        $article->save();
-
+        $isPublisher = User::find(auth()->id())->hasPermission('articles publish');
+        if ($isPublisher || auth()->user()->is_superadmin) {
+            $article = Article::find($id);
+            $article->publish = !($article->publish);
+            $article->save();
+        }
+        
         return redirect()->route('article.index');
     }
 
