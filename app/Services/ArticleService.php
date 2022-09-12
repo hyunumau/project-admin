@@ -94,11 +94,12 @@ class ArticleService
     {
         DB::beginTransaction();
         try {
-            if ($data['image'] == null) {
-                $data['image'] = $article->image;
-            } else {
+
+            if (Arr::has($data, 'image')) {
                 Storage::disk('s3')->delete($article->image);
                 $data['image'] = $this->handleFileUpload(Arr::get($data, 'image'));
+            } else {
+                $data['image'] = $article->image;
             }
 
             if (isset($data['categories'])) {

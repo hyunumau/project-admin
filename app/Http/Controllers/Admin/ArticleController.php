@@ -119,7 +119,7 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        if (auth()->id === $article->author) {
+        if (auth()->id() === $article->author) {
             $categories = Category::all();
             $tags = Tag::all();
             $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
@@ -138,7 +138,7 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, Article $article)
     {
-        if (auth()->id === $article->author) {
+        if (auth()->id() === $article->author) {
             $this->articleService->update($request->validated(), $article);
         }
 
@@ -167,7 +167,7 @@ class ArticleController extends Controller
             $article->publish = !($article->publish);
             $article->save();
         }
-        
+
         return redirect()->route('article.index');
     }
 

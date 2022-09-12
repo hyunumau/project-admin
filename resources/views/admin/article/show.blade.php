@@ -56,13 +56,13 @@
                                 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
                                 Categories</h3>
                             <div class="grid grid-cols-4 gap-4">
-                                <x-forms.checkbox id="1" name="categories[]" :items="$categories" :selected="$articleHasCategories" />
+                                <x-forms.checkbox id="1" name="categories[]" :items="$categories" :selected="$articleHasCategories" disable />
                             </div>
                             <h3
                                 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">
                                 Tags</h3>
                             <div class="grid grid-cols-4 gap-4">
-                                <x-forms.checkbox id="1" name="tags[]" :items="$tags" :selected="$articleHasTags" />
+                                <x-forms.checkbox id="1" name="tags[]" :items="$tags" :selected="$articleHasTags" disable/>
                             </div>
                         </div>
                     </div>
