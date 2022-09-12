@@ -51,4 +51,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function hasPermission($permissionName)
+    {
+        $permissions = $this->roles()
+            ->with(['permissions'])
+            ->get()
+            ->map(function ($role) {
+                return $role->permissions->pluck('name')->all();
+            })
+            ->collapse()
+            ->toArray();
+        
+        return in_array($permissionName, $permissions);
+    }
 }

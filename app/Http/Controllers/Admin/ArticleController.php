@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\User;
 use App\Services\ArticleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -33,7 +34,9 @@ class ArticleController extends Controller
         $with = [
             'categories'
         ];
-        dd(Gate::allows('articles publish'));
+        $id = auth()->id();
+        $has = User::find($id)->hasPermission('articles publish');
+        dd($has);
         if (Gate::allows('articles publish')) {
             $filter = [
                 ...$request->query(),
@@ -163,7 +166,7 @@ class ArticleController extends Controller
         $article = Article::find($id);
         $article->publish = !($article->publish);
         $article->save();
-        
+
         return redirect()->route('article.index');
     }
 
