@@ -33,7 +33,7 @@ class ArticleController extends Controller
         $with = [
             'categories'
         ];
-
+        dd(Gate::allows('articles publish'));
         if (Gate::allows('articles publish')) {
             $filter = [
                 ...$request->query(),
