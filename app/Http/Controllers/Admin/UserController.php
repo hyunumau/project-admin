@@ -22,7 +22,7 @@ class UserController extends Controller
      */
     function __construct(UserService $userService)
     {
-        $this->middleware('can:user list', ['only' => ['index', 'show']]);
+        $this->middleware('can:user read', ['only' => ['index', 'show']]);
         $this->middleware('can:user create', ['only' => ['create', 'store']]);
         $this->middleware('can:user edit', ['only' => ['edit', 'update']]);
         $this->middleware('can:user delete', ['only' => ['destroy']]);

@@ -34,9 +34,9 @@ class ArticleController extends Controller
         $with = [
             'categories'
         ];
-        $id = auth()->id();
-        $has = User::find($id)->hasPermission('articles publish');
-        if ($has || auth()->user()->is_superadmin) {
+
+        $isPublisher = User::find(auth()->id())->hasPermission('articles publish');
+        if ($isPublisher || auth()->user()->is_superadmin) {
             $filter = [
                 ...$request->query(),
                 'paginate' => 10,
