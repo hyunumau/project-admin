@@ -19,11 +19,11 @@
                             {{ __('Permission') }}
                         </x-nav-link>
                     @endcan
-                    @can('role read')
+                    @if(Gate::check('can_do', ['role read']))
                         <x-nav-link :href="route('role.index')" :active="request()->routeIs('role.index')">
                             {{ __('Role') }}
                         </x-nav-link>
-                    @endcan
+                    @endif
                     @can('user read')
                         <x-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
                             {{ __('Users') }}
