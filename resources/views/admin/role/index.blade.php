@@ -9,7 +9,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="flex flex-col mt-8">
-                        @if(Gate::check('can_do', ['role create']))
+                        @if (Gate::check('can_do', ['role create']))
                             <div class="d-print-none with-border mb-8">
                                 <a href="{{ route('role.create') }}"
                                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ __('Add Role') }}</a>
@@ -29,7 +29,7 @@
                                                 class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
                                                 NAME
                                             </th>
-                                            @if(Gate::check('can_do', ['role edit', 'role delete']))
+                                            @if (Gate::check('can_do', ['role edit', 'role delete']))
                                                 <th
                                                     class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light text-left">
                                                     {{ __('Actions') }}
@@ -44,22 +44,22 @@
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                     <div class="text-sm text-gray-900">
                                                         <a href="{{ route('role.show', $role->id) }}"
-                                                            class="no-underline hover:underline text-cyan-600 dark:text-cyan-400">{{ $role->name }}</a>
+                                                            class="no-underline hover:underline text-cyan-600 dark:text-cyan-400">{{ $role->name }}
+                                                        </a>
                                                     </div>
                                                 </td>
-
-                                                <td
-                                                    class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                                                    @if(Gate::check('can_do', ['role edit', 'role delete']))
+                                                @if (Gate::check('can_do', ['role edit', 'role delete']))
+                                                    <td
+                                                        class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                         <form action="{{ route('role.destroy', $role->id) }}"
                                                             method="POST">
-                                                            @if(Gate::check('can_do', ['role edit']))
+                                                            @if (Gate::check('can_do', ['role edit']))
                                                                 <a href="{{ route('role.edit', $role->id) }}"
                                                                     class="px-4 py-2 text-white mr-4 bg-blue-600">
                                                                     {{ __('Edit') }}
                                                                 </a>
                                                             @endif
-                                                            @if(Gate::check('can_do', ['role delete']))
+                                                            @if (Gate::check('can_do', ['role delete']))
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button class="px-4 py-2 text-white bg-red-600"
@@ -68,9 +68,9 @@
                                                                 </button>
                                                             @endif
                                                         </form>
-                                                    @endif
-                                                </td>
 
+                                                    </td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
