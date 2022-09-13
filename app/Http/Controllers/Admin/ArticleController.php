@@ -35,8 +35,7 @@ class ArticleController extends Controller
             'categories'
         ];
 
-        $isPublisher = User::find(auth()->id())->hasPermission('articles publish');
-        if ($isPublisher || auth()->user()->is_superadmin) {
+        if (Gate::check('can_do', ['articles publish'])) {
             $filter = [
                 ...$request->query(),
                 'paginate' => 10,
@@ -118,7 +117,7 @@ class ArticleController extends Controller
     public function edit(Article $article)
     {
         $this->authorize('update-article', $article);
-        
+
         if (auth()->id() === $article->author) {
             $categories = Category::all();
             $tags = Tag::all();
