@@ -101,8 +101,6 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
-        $this->authorize('update-article', $article);
-
         $categories = Category::all();
         $tags = Tag::all();
         $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
@@ -119,6 +117,8 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
+        $this->authorize('update-article', $article);
+        
         if (auth()->id() === $article->author) {
             $categories = Category::all();
             $tags = Tag::all();
@@ -138,6 +138,8 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, Article $article)
     {
+        $this->authorize('update-article', $article);
+
         if (auth()->id() === $article->author) {
             $this->articleService->update($request->validated(), $article);
         }
@@ -161,8 +163,7 @@ class ArticleController extends Controller
 
     public function changePublish($id)
     {
-        $isPublisher = User::find(auth()->id())->hasPermission('articles publish');
-        if ($isPublisher || auth()->user()->is_superadmin) {
+        if (Gate::check('can_do', ['articles publish'])) {
             $article = Article::find($id);
             $article->publish = !($article->publish);
             $article->save();
@@ -173,7 +174,7 @@ class ArticleController extends Controller
 
     public function getList(Request $request)
     {
-        if (Gate::allows('articles publish')) {
+        if (Gate::check('can_do', ['articles publish'])) {
             $filter = $request->query();
         } else {
             $filter = [

@@ -14,21 +14,21 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    @can('permisson read')
+                    @if(Gate::check('can_do', ['permission read']))
                         <x-nav-link :href="route('permission.index')" :active="request()->routeIs('permission.index')">
                             {{ __('Permission') }}
                         </x-nav-link>
-                    @endcan
+                    @endif
                     @if(Gate::check('can_do', ['role read']))
                         <x-nav-link :href="route('role.index')" :active="request()->routeIs('role.index')">
                             {{ __('Role') }}
                         </x-nav-link>
                     @endif
-                    @can('user read')
+                    @if(Gate::check('can_do', ['user read']))
                         <x-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
                             {{ __('Users') }}
                         </x-nav-link>
-                    @endcan
+                    @endif
                     <x-nav-link :href="route('article.index')" :active="request()->routeIs('article.index')">
                         {{ __('Articles') }}
                     </x-nav-link>
@@ -87,56 +87,6 @@
                             stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Responsive Navigation Menu -->
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            @can('permission read')
-                <x-responsive-nav-link :href="route('permission.index')" :active="request()->routeIs('permission.index')">
-                    {{ __('Permission') }}
-                </x-responsive-nav-link>
-            @endcan
-            <x-responsive-nav-link :href="route('role.index')" :active="request()->routeIs('role.index')">
-                {{ __('Roles') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
-                {{ __('Users') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('article.index')" :active="request()->routeIs('article.index')">
-                {{ __('Articles') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('category.index')" :active="request()->routeIs('category.index')">
-                {{ __('Categories') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('tag.index')" :active="request()->routeIs('tag.index')">
-                {{ __('Tags') }}
-            </x-responsive-nav-link>
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
             </div>
         </div>
     </div>

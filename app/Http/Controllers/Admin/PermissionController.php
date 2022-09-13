@@ -13,12 +13,10 @@ class PermissionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
-    {
-        $this->middleware('can:permission read', ['only' => ['index', 'show']]);
-    }
     public function index()
     {
+        $this->authorize('can_do', ['permission read']);
+
         $permissions = Permission::all();
         
         return view('admin.permission.index', compact('permissions'));

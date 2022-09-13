@@ -22,17 +22,13 @@ class UserController extends Controller
      */
     function __construct(UserService $userService)
     {
-        $this->middleware('can:user read', ['only' => ['index', 'show']]);
-        $this->middleware('can:user create', ['only' => ['create', 'store']]);
-        $this->middleware('can:user edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:user delete', ['only' => ['destroy']]);
-
         $this->userService = $userService;
     }
 
     public function index(Request $request)
     {
-        if (Gate::allows('user read')) {
+        $this->authorize('can_do', ['user read']);
+
             $filter = [
                 ...$request->query(),
                 'filter' => [
@@ -40,16 +36,6 @@ class UserController extends Controller
                 ],
                 'paginate' => 10
             ];
-        } else {
-            $filter = [
-                ...$request->query(),
-                'filter' => [
-                    ...$request->query('filter', []),
-                    'is_superadmin' => 0
-                ],
-                'paginate' => 10
-            ];
-        }
 
         $users = $this->userService->getList($filter);
 
@@ -61,7 +47,9 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
+    {   
+        $this->authorize('can_do', ['user create']);
+
         $roles = Role::all();
 
         return view('admin.user.create', compact('roles'));
@@ -76,6 +64,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        $this->authorize('can_do', ['user create']);
+
         $this->userService->create($request->validated());
 
         return redirect()->route('user.index')
@@ -90,6 +80,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $this->authorize('can_do', ['user read']);
+
         $roles = Role::all();
         $userRoles = array_column(json_decode($user->roles, true), 'id');
 
@@ -104,6 +96,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('can_do', ['user edit']);
+
         $roles = Role::all();
         $userHasRoles = array_column(json_decode($user->roles, true), 'id');
 
@@ -120,6 +114,8 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('can_do', ['user edit']);
+
         $this->userService->update($request->validated(), $user);
         
         return redirect()->route('user.index')
@@ -135,6 +131,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('can_do', ['user delete']);
+
         $user->delete();
 
         return redirect()->route('user.index')
