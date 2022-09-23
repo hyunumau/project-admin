@@ -36,7 +36,7 @@ class ArticleService
             });
         }
 
-        return $query->filter($filter)
+        return $query->latest()->filter($filter)
             ->searchAll($filter, ["{$articleTable}.id", 'caption', 'u.name'])
             ->getWithPaginate($filter);
     }
