@@ -35,14 +35,13 @@
             <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-center pt-8 sm:justify-center sm:pt-0">
                     <div class="flex justify-center pt-8 sm:justify-center sm:pt-0">
-                        <h1>Welcome to my project</h1>
-                        <br>
-                        <h4>Guest account</h4>
-                        <br>
-                        <p>Email: guest@example.com</p>
-                        <br>
-                        <p>Password: guest@example.com</p>
-                        <br>
+                        <div class="text-center">
+                            <h1>Welcome to my project</h1>
+                            <br></br>
+                            <h4>Guest account</h4>
+                            <p>Email: guest@example.com</p>
+                            <p>Password: guest@example.com</p>
+                        </div>
                     </div>
                 </div>
 
