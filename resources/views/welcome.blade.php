@@ -36,6 +36,9 @@
                 <div class="flex justify-center pt-8 sm:justify-center sm:pt-0">
                     <div class="flex justify-center pt-8 sm:justify-center sm:pt-0">
                         <h1>Welcome to my project</h1>
+                        <h4>Guest account</h4>
+                        <p>Email: guest@example.com</p>
+                        <p>Password: guest@example.com</p>
                     </div>
                 </div>
 
