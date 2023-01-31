@@ -21,16 +21,13 @@ class RoleController extends Controller
      */
     function __construct(RoleService $roleService)
     {
-        $this->middleware('can:role list', ['only' => ['index', 'show']]);
-        $this->middleware('can:role create', ['only' => ['create', 'store']]);
-        $this->middleware('can:role edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:role delete', ['only' => ['destroy']]);
-
         $this->roleService = $roleService;
     }
 
     public function index()
     {
+        $this->authorize('can_do', ['role read']);
+        
         $roles = new Role;
         $roles = $roles->all();
         
@@ -43,6 +40,8 @@ class RoleController extends Controller
      */
     public function create()
     {
+        $this->authorize('can_do', ['role create']);
+
         $permissions = Permission::all();
 
         return view('admin.role.create', compact('permissions'));
@@ -56,6 +55,8 @@ class RoleController extends Controller
      */
     public function store(StoreRoleRequest $request)
     {
+        $this->authorize('can_do', ['role create']);
+
         $this->roleService->create($request->validated());
         
         return redirect()->route('role.index')
@@ -70,6 +71,8 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
+        $this->authorize('can_do', ['role read']);
+
         $permissions = Permission::all();
         $roleHasPermissions = array_column(json_decode($role->permissions, true), 'id');
 
@@ -83,6 +86,8 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        $this->authorize('can_do', ['role edit']);
+
         $permissions = Permission::all();
         $roleHasPermissions = array_column(json_decode($role->permissions, true), 'id');
         
@@ -98,6 +103,8 @@ class RoleController extends Controller
      */
     public function update(UpdateRoleRequest $request, Role $role)
     {   
+        $this->authorize('can_do', ['role edit']);
+
         $this->roleService->update($request->validated(), $role);
         
         return redirect()->route('role.index')
@@ -112,6 +119,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        $this->authorize('can_do', ['role delete']);
+
         $role->delete();
 
         return redirect()->route('role.index')

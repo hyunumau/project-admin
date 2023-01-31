@@ -14,7 +14,7 @@ trait HasSearch
 
             $query->where(function ($query) use ($columns, $value) {
                 foreach ($columns as $column) {
-                    $query->orWhere($column, 'like', "%{$value}%");
+                    $query->orWhere($column, 'ilike', "%{$value}%");
                 }
             });
         }

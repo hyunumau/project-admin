@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleService
 {
@@ -35,8 +36,8 @@ class ArticleService
             });
         }
 
-        return $query->filter($filter)
-            ->searchAll($filter, [ "{$articleTable}.id", 'caption', 'u.name'])
+        return $query->latest()->filter($filter)
+            ->searchAll($filter, ["{$articleTable}.id", 'caption', 'u.name'])
             ->getWithPaginate($filter);
     }
 
@@ -84,23 +85,21 @@ class ArticleService
             return null;
         }
 
-        $fileName = time() . "-" . $file->getClientOriginalName();
-        $file->storeAs('public', $fileName);
+        $path = Storage::disk('s3')->put('images-article', $file, 'public');
 
-        return $fileName;
+        return $path;
     }
 
     public function update($data, $article)
     {
         DB::beginTransaction();
         try {
-            $fileName = $this->handleFileUpload(Arr::get($data, 'image'));
 
-            if (empty($fileName)) {
-                $data['image'] = $article->image;
+            if (Arr::has($data, 'image')) {
+                Storage::disk('s3')->delete($article->image);
+                $data['image'] = $this->handleFileUpload(Arr::get($data, 'image'));
             } else {
-                unlink(public_path($article->image_url));
-                $data['image'] = $fileName;
+                $data['image'] = $article->image;
             }
 
             if (isset($data['categories'])) {

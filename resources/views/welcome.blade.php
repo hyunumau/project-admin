@@ -35,7 +35,13 @@
             <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-center pt-8 sm:justify-center sm:pt-0">
                     <div class="flex justify-center pt-8 sm:justify-center sm:pt-0">
-                        <h1>Welcome to my project</h1>
+                        <div class="text-center">
+                            <h1>Welcome to my project</h1>
+                            <br></br>
+                            <h4>Guest account</h4>
+                            <p>Email: guest@example.com</p>
+                            <p>Password: guest@example.com</p>
+                        </div>
                     </div>
                 </div>
 
@@ -66,7 +72,7 @@
                                         d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
                                     </path>
                                 </svg>
-                                <div class="ml-4 text-lg leading-7 font-semibold"><a href="{{ route('login') }}"
+                                <div class="ml-4 text-lg leading-7 font-semibold"><a href="https://aws.d1dysjvszrqp84.amplifyapp.com/"
                                     class="underline text-gray-900 dark:text-white">Article</a></div>
                             </div>
     

@@ -26,8 +26,7 @@
                                                 <td
                                                     class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                                                     <div class="text-sm text-gray-900">
-                                                        <a href="{{ route('permission.show', $permission->id) }}"
-                                                            class="no-underline hover:underline text-cyan-600 dark:text-cyan-400">{{ $permission->name }}</a>
+                                                        <p class="no-underline hover:underline text-cyan-600 dark:text-cyan-400">{{ $permission->name }}</p>
                                                     </div>
                                                 </td>
                                             </tr>

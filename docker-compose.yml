@@ -44,6 +44,19 @@ services:
             test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
             retries: 3
             timeout: 5s
+    adminer:
+        image: adminer:4
+        networks:
+            - sail
+        ports:
+            - "8084:8080"
+        links:
+            - mysql
+        environment:
+            ADMINER_DESIGN: "pepa-linha"
+            ADMINER_DEFAULT_SERVER: mysql
+            ADMINER_PLUGINS: "tables-filter tinymce"
+        restart: unless-stopped
 networks:
     sail:
         driver: bridge

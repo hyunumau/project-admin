@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\User;
 use App\Services\ArticleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -34,7 +35,7 @@ class ArticleController extends Controller
             'categories'
         ];
 
-        if (Gate::allows('articles publish')) {
+        if (Gate::check('can_do', ['articles publish'])) {
             $filter = [
                 ...$request->query(),
                 'paginate' => 10,
@@ -99,8 +100,6 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
-        $this->authorize('update-article', $article);
-
         $categories = Category::all();
         $tags = Tag::all();
         $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
@@ -119,10 +118,12 @@ class ArticleController extends Controller
     {
         $this->authorize('update-article', $article);
 
-        $categories = Category::all();
-        $tags = Tag::all();
-        $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
-        $articleHasTags = array_column(json_decode($article->tags, true), 'id');
+        if (auth()->id() === $article->author) {
+            $categories = Category::all();
+            $tags = Tag::all();
+            $articleHasCategories = array_column(json_decode($article->categories, true), 'id');
+            $articleHasTags = array_column(json_decode($article->tags, true), 'id');
+        }
 
         return view('admin.article.edit', compact('article', 'categories', 'articleHasCategories', 'tags', 'articleHasTags'));
     }
@@ -138,7 +139,9 @@ class ArticleController extends Controller
     {
         $this->authorize('update-article', $article);
 
-        $this->articleService->update($request->validated(), $article);
+        if (auth()->id() === $article->author) {
+            $this->articleService->update($request->validated(), $article);
+        }
 
         return redirect()->route('article.index')
             ->with('message', 'Cập nhật thành công');
@@ -159,17 +162,18 @@ class ArticleController extends Controller
 
     public function changePublish($id)
     {
-        $this->authorize('articles publish');
-        $article = Article::find($id);
-        $article->publish = !($article->publish);
-        $article->save();
-        
+        if (Gate::check('can_do', ['articles publish'])) {
+            $article = Article::find($id);
+            $article->publish = !($article->publish);
+            $article->save();
+        }
+
         return redirect()->route('article.index');
     }
 
     public function getList(Request $request)
     {
-        if (Gate::allows('articles publish')) {
+        if (Gate::check('can_do', ['articles publish'])) {
             $filter = $request->query();
         } else {
             $filter = [

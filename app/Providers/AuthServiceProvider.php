@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 
 use App\Models\Article;
+use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -35,6 +36,17 @@ class AuthServiceProvider extends ServiceProvider
             if ($user->is_superadmin) {
                 return true;
             }
+        });
+
+        foreach(Permission::all() as $permission)
+        {
+            Gate::define($permission->name, function(User $user) use ($permission){
+                return $user->hasPermission($permission);
+            });
+        }
+
+        Gate::define('can_do', function(User $user, $permissionName) {
+            return $user->hasPermission($permissionName);
         });
 
         Gate::define('update-article', function (User $user, $article) {
